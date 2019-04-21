@@ -7,9 +7,11 @@ cluster parameters:
 
 + `threads`
 + `resources`
-    - `mem_mb`: Expected memory requirements in megabytes
-+ `cluster`
     - `mem_mb`: Expected memory requirements in megabytes. Overrides
+      cluster.mem_mb
++ `cluster`
+    - `mem_mb`: Memory that will be requested for the cluster for the job.
+      Overriden by resources.mem_mb, if present.
       `resources`
     - `queue`: Which queue to run job on
     - `logdir`: Where to log stdout/stderr from cluster command
@@ -49,11 +51,11 @@ threads = job.get("threads", 1)
 # get the resource properties
 resources = job.get("resources", dict())
 # get the memory usage in megabytes that we will request
-mem_mb = cluster.get(
-    "mem_mb",  # first see if it's in the cluster configuration
-    # if not, check if the job itself gave its expected use
-    resources.get(
-        "mem_mb",  # request what the job says, if it says anything
+mem_mb = resources.get(
+    "mem_mb",  # first see if the job itself specifies the memory it needs
+    # if not, check if the cluster configuration gives guidance
+    cluster.get(
+        "mem_mb",  # request what the cluster says, if it says anything
         int({{cookiecutter.default_mem_mb}})  # otherwise, use default value
     )
 )

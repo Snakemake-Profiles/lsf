@@ -33,12 +33,13 @@ Snakemake file:
 + `threads`: the number of threads needed for the job. If not specified,
   assumed to be 1.
 + `resources`
-    - `mem_mb`: the memory required for the rule in megabytes.
+    - `mem_mb`: the memory required for the rule in megabytes, which will be
+      requested if present
 
 A cluster configuration can be provided to specify additional information:
-+ `mem_mb`: the memory that will be requested for the rule in megabytes. If not
-  provided, uses `resources.mem_mb`. If that is not provided either, use a
-  default value.
++ `mem_mb`: the memory that will be requested for the rule in megabytes.
+  Overriden by `resources.mem_mb`. If neither provided, use a default value (in
+  cookiecutter configuration).
 + `queue`: override the default queue for this job.
 + `logdir`: override the default cluster log directory for this job.
 + `output`: override the default name of stdout logfile
