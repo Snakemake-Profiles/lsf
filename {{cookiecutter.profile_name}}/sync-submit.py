@@ -40,7 +40,7 @@ cluster = job.get("cluster", dict())
 rule = job.get("rule", "jobname")
 # get the wildcards
 wildcards = job.get("wildcards", dict())
-wildcards_str = ",".join("{}={}".format(k, v) for k, v in wildcards.items())
+wildcards_str = ";".join("{}={}".format(k, v) for k, v in wildcards.items())
 if not wildcards_str:
     # if there aren't wildcards, this is a unique rule
     wildcards_str = "unique"
