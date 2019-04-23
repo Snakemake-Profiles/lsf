@@ -1,7 +1,8 @@
 # Snakemake sync bsub/qsub profile
 
 Snakemake cookiecutter profile for running jobs on bsub or qsub cluster using
-synchronization. Deploy using [cookiecutter][cookiecutter-repo] by running:
+synchronization. Deploy using [cookiecutter][cookiecutter-repo] (easily
+installed using conda or pip) by running:
 
    [cookiecutter-repo]: https://github.com/audreyr/cookiecutter
 
@@ -9,7 +10,7 @@ synchronization. Deploy using [cookiecutter][cookiecutter-repo] by running:
 # make sure configuration directory snakemake looks for profiles in exists
 mkdir -p ~/.config/snakemake
 # use cookiecutter to create a profile in the config directory
-cookiecutter --output-dir ~/.config/snakemake .
+cookiecutter --output-dir ~/.config/snakemake gh:jaicher/snakemake-sync-bq-sub
 ```
 
 This command will prompt for parameters to set. In particular, it will ask a
