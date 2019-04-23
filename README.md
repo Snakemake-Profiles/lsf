@@ -1,9 +1,12 @@
 # Snakemake sync bsub/qsub profile
 
 Snakemake cookiecutter profile for running jobs on bsub or qsub cluster using
-synchronization. Deploy using [cookiecutter][cookiecutter-repo] (easily
-installed using conda or pip) by running:
+synchronization.
+Inspired by [broadinstitute/snakemake-broad-uger][broad-example].
+Deploy using [cookiecutter][cookiecutter-repo] (easily installed using conda or
+pip) by running:
 
+   [broad-example]: https://github.com/broadinstitute/snakemake-broad-uger
    [cookiecutter-repo]: https://github.com/audreyr/cookiecutter
 
 ```
