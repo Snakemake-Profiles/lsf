@@ -2,7 +2,6 @@
     "latency_wait": 10,
     "use_conda": true,
     "use_singularity": true,
-    "keep_going": true,
     "restart_times": 1,
     "jobs": 1999,
     "default_mem_mb": 1024,
