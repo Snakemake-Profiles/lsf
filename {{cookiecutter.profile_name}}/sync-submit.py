@@ -38,7 +38,11 @@ cluster = job.get("cluster", dict())
 
 # get the group or rule name. If neither exists, use the DEFAULT_NAME
 # NOTE: if group is present rule is not valid therefore group must come before rule
-name = job.get("group", "") or job.get("rule", "") or DEFAULT_NAME
+if job.get("type", "") == "group":
+    name = job.get("groupid", "group") + "_" + job.get("jobid", "").split("-")[0]
+else:
+    name = job.get("rule", "") or DEFAULT_NAME
+
 wildcards = job.get("wildcards", dict())
 wildcards_str = ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
 
@@ -59,7 +63,10 @@ queue = cluster.get("queue", "")
 
 
 jobinfo_cmd = "-o {out_log:q} -e {err_log:q} -J {jobname:q}"
-resources_cmd = "-M {mem_mb} -n {threads} -R 'span[hosts=1] rusage [mem={mem_mb}]'"
+resources_cmd = (
+    "-M {mem_mb} -n {threads} "
+    "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}] span[hosts=1]'"
+)
 queue_cmd = "-q {queue}" if queue else ""
 cluster_cmd = " ".join(sys.argv[1:-1])
 
