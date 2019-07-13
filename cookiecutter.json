@@ -1,12 +1,13 @@
 {
-    "cluster": ["bsub", "qsub"],
-    "latency_wait": 60,
+    "latency_wait": 10,
     "use_conda": true,
+    "use_singularity": true,
     "keep_going": true,
     "restart_times": 1,
-    "jobs": 100,
-    "default_mem_mb": 2048,
-    "default_cluster_logdir": "cluster_logs",
+    "jobs": 1999,
+    "default_mem_mb": 1024,
+    "default_threads": 1,
+    "default_cluster_logdir": "logs/cluster",
     "default_queue": "",
-    "profile_name": "cluster-sync"
+    "profile_name": "bsub"
 }

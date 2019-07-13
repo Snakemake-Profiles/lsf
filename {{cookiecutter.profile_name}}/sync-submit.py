@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 sync-submit.py
 
-Script to wrap bsub/qsub sync command for Snakemake. Uses the following job or
+Script to wrap bsub sync command for Snakemake. Uses the following job or
 cluster parameters:
 
 + `threads`
@@ -19,114 +19,64 @@ cluster parameters:
     - `error`: Name of stderr logfile
     - `jobname`: Job name (with wildcards)
 
-Author: Joseph K Aicher
+Author: Michael B Hall
+Adapted from: https://github.com/jaicher/snakemake-sync-bq-sub
 """
 
-import sys  # for command-line arguments (get jobscript)
-from pathlib import Path  # for path manipulation
-from snakemake.utils import read_job_properties  # get info from jobscript
-from snakemake.shell import shell  # to run shell command nicely
+import sys
+from pathlib import Path
+from snakemake.utils import read_job_properties
+from snakemake.shell import shell
 
-# get the jobscript (last argument)
+
+DEFAULT_NAME = "jobname"
+
+
 jobscript = sys.argv[-1]
-# read the jobscript and get job properties
 job = read_job_properties(jobscript)
-
-# get the cluster properties
 cluster = job.get("cluster", dict())
 
-# get job information
-# get the rule
-rule = job.get("rule", "jobname")
-# get the wildcards
+# get the group or rule name. If neither exists, use the DEFAULT_NAME
+# NOTE: if group is present rule is not valid therefore group must come before rule
+name = job.get("group", "") or job.get("rule", "") or DEFAULT_NAME
 wildcards = job.get("wildcards", dict())
-wildcards_str = ";".join("{}={}".format(k, v) for k, v in wildcards.items())
-if not wildcards_str:
-    # if there aren't wildcards, this is a unique rule
-    wildcards_str = "unique"
+wildcards_str = ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
 
-# get resources information
-# get the number of threads the job wants
-threads = job.get("threads", 1)
-# get the resource properties
+threads = job.get("threads", int({{cookiecutter.default_threads}}))
 resources = job.get("resources", dict())
 # get the memory usage in megabytes that we will request
 mem_mb = resources.get(
     "mem_mb",  # first see if the job itself specifies the memory it needs
     # if not, check if the cluster configuration gives guidance
-    cluster.get(
-        "mem_mb",  # request what the cluster says, if it says anything
-        int({{cookiecutter.default_mem_mb}})  # otherwise, use default value
-    )
+    cluster.get("mem_mb", int({{cookiecutter.default_mem_mb}})),
 )
-mem_per_thread = round(mem_mb / threads, 2)  # per thread...
 
-# determine names to pass through for job name, logfiles
-log_dir = cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}")
-# get the name of the job
-jobname = cluster.get("jobname", "{0}.{1}".format(rule, wildcards_str))
-# get the output file name
-out_log = cluster.get("output", "{}.out".format(jobname))
-err_log = cluster.get("error", "{}.err".format(jobname))
-# get logfile paths
-out_log_path = str(Path(log_dir).joinpath(out_log))
-err_log_path = str(Path(log_dir).joinpath(err_log))
-
-# get the queue to run the job on
-queue = cluster.get("queue", "{{cookiecutter.default_queue}}")
-
-# set name/log information
-jobinfo_cmd = {
-    "bsub": (
-        "-o {out_log_path:q} -e {err_log_path:q}"
-        " -J {jobname:q}"
-    ),
-    "qsub": (
-        "-o {out_log_path:q} -e {err_log_path:q}"
-        " -N {jobname:q}"
-    )
-}["{{cookiecutter.cluster}}"]
+log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
+jobname = cluster.get("jobname", "{0}.{1}".format(name, wildcards_str))
+out_log = str(log_dir / cluster.get("output", "{}.out".format(jobname)))
+err_log = str(log_dir / cluster.get("error", "{}.err".format(jobname)))
+queue = cluster.get("queue", "")
 
 
-# set up resources part of command
-resources_cmd = {
-    "bsub": (
-        "-M {mem_mb} -n {threads}"
-        " -R 'span[hosts=1] rusage [mem={mem_mb}]'"
-    ),
-    "qsub": (
-        # shared memory processes, preferentially on consecutive cores
-        "-pe smp {threads} -binding linear:{threads}"
-        # memory limit and memory request
-        " -l h_vmem={mem_per_thread}M"
-        " -l m_mem_free={mem_per_thread}M"
-    )
-}["{{cookiecutter.cluster}}"]
-
-# get queue part of command (if empty, don't put in anything)
+jobinfo_cmd = "-o {out_log:q} -e {err_log:q} -J {jobname:q}"
+resources_cmd = "-M {mem_mb} -n {threads} -R 'span[hosts=1] rusage [mem={mem_mb}]'"
 queue_cmd = "-q {queue}" if queue else ""
-
-# get cluster commands to pass through, if any
 cluster_cmd = " ".join(sys.argv[1:-1])
 
 # get command to do cluster sync
-sync_cmd = {
-    "bsub": "bsub -K",
-    "qsub": "qsub -terse -cwd -sync y"
-}["{{cookiecutter.cluster}}"]
+sync_cmd = "bsub -K"
+
 
 # run commands
 shell(
-    # sync command (bsub/qsub)
     sync_cmd
-    # specify required threads/resources
-    + " " + resources_cmd
-    # specify job name, output/error logfiles
-    + " " + jobinfo_cmd
-    # specify queue
-    + " " + queue_cmd
-    # put in pass-through commands
-    + " " + cluster_cmd
-    # finally, the jobscript
+    + " "
+    + resources_cmd
+    + " "
+    + jobinfo_cmd
+    + " "
+    + queue_cmd
+    + " "
+    + cluster_cmd
     + " {jobscript}"
 )
