@@ -39,12 +39,15 @@ cluster = job.get("cluster", dict())
 # get the group or rule name. If neither exists, use the DEFAULT_NAME
 # NOTE: if group is present rule is not valid therefore group must come before rule
 if job.get("type", "") == "group":
-    name = job.get("groupid", "group") + "_" + job.get("jobid", "").split("-")[0]
+    jobname = job.get("groupid", "group") + "_" + job.get("jobid", "").split("-")[0]
 else:
+    wildcards = job.get("wildcards", dict())
+    wildcards_str = (
+        ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
+    )
     name = job.get("rule", "") or DEFAULT_NAME
+    jobname = cluster.get("jobname", "{0}.{1}".format(name, wildcards_str))
 
-wildcards = job.get("wildcards", dict())
-wildcards_str = ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
 
 threads = job.get("threads", int({{cookiecutter.default_threads}}))
 resources = job.get("resources", dict())
@@ -56,7 +59,6 @@ mem_mb = resources.get(
 )
 
 log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
-jobname = cluster.get("jobname", "{0}.{1}".format(name, wildcards_str))
 out_log = str(log_dir / cluster.get("output", "{}.out".format(jobname)))
 err_log = str(log_dir / cluster.get("error", "{}.err".format(jobname)))
 queue = cluster.get("queue", "")
