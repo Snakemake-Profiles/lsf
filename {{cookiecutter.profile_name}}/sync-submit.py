@@ -72,8 +72,8 @@ resources_cmd = (
 queue_cmd = "-q {queue}" if queue else ""
 cluster_cmd = " ".join(sys.argv[1:-1])
 
-# get command to do cluster sync
-sync_cmd = "bsub -K"
+# command to do cluster sync
+sync_cmd = "bsub "
 
 
 # run commands
