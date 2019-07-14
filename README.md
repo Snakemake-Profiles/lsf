@@ -1,6 +1,6 @@
 # Snakemake sync bsub profile
 
-Snakemake cookiecutter profile for running jobs on bsub cluster using synchronisation.
+[Snakemake profile](https://snakemake.readthedocs.io/en/stable/executable.html#profiles) for running jobs on bsub cluster using synchronisation.
 Inspired by [jaicher/snakemake-sync-bq-sub][original].  
 
 Deploy using [cookiecutter][cookiecutter-repo] (easily installed using conda or
