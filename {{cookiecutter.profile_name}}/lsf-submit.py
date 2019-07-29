@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-sync-submit.py
+lsf-submit.py
 
 Script to wrap bsub sync command for Snakemake. Uses the following job or
 cluster parameters:
@@ -72,13 +72,13 @@ resources_cmd = (
 queue_cmd = "-q {queue}" if queue else ""
 cluster_cmd = " ".join(sys.argv[1:-1])
 
-# command to do cluster sync
-sync_cmd = "bsub "
+# command to submit to cluster
+submit_cmd = "bsub "
 
 
 # run commands
 shell(
-    sync_cmd
+    submit_cmd
     + " "
     + resources_cmd
     + " "
