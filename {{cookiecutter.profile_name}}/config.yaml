@@ -3,4 +3,4 @@ use-conda: {{cookiecutter.use_conda}}
 use-singularity: {{cookiecutter.use_singularity}}
 restart-times: {{cookiecutter.restart_times}}
 jobs: {{cookiecutter.jobs}}
-cluster-sync: "sync-submit.py"
+cluster: "lsf-submit.py"
