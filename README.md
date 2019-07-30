@@ -1,6 +1,6 @@
-# Snakemake sync bsub profile
+# Snakemake LSF profile
 
-[Snakemake profile][profile] for running jobs on a [bsub][bsub] cluster.
+[Snakemake profile][profile] for running jobs on a [LSF][lsf] cluster.
 Inspired by [jaicher/snakemake-sync-bq-sub][original].  
 
 Deploy using [cookiecutter][cookiecutter-repo] (easily installed using conda or
@@ -8,7 +8,7 @@ pip) by running:
 
 [original]: https://github.com/jaicher/snakemake-sync-bq-sub
 [profile]: https://snakemake.readthedocs.io/en/stable/executable.html#profiles
-[bsub]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html
+[lsf]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html
 [cookiecutter-repo]: https://github.com/audreyr/cookiecutter
 
 ```sh
