@@ -25,13 +25,6 @@ STATUS_TABLE = {
 }
 
 
-def get_job_status(stdout: str) -> str:
-    fields = stdout.split()
-    status = fields[2]
-
-    return status
-
-
 def get_status_for_snakemake(job_status: str) -> str:
     status = STATUS_TABLE.get(job_status, "unknown")
 
@@ -48,7 +41,7 @@ def get_status_for_snakemake(job_status: str) -> str:
 
 
 def query_status(jobid: int) -> Tuple[str, str]:
-    cmd = "bjobs -noheader {}".format(jobid)
+    cmd = "bjobs -o 'stat' -noheader {}".format(jobid)
     proc = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
@@ -72,7 +65,7 @@ def main():
         stdout, stderr = query_status(jobid)
         tries += 1
 
-    job_status = get_job_status(stdout)
+    job_status = stdout
     status_for_snakemake = get_status_for_snakemake(job_status)
 
     print(status_for_snakemake)
