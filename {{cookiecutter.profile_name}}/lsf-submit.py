@@ -28,6 +28,7 @@ import re
 import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
+from snakemake.shell import shell
 
 
 DEFAULT_NAME = "jobname"
