@@ -15,22 +15,22 @@ pip) by running:
 # make sure configuration directory snakemake looks for profiles in exists
 mkdir -p ~/.config/snakemake
 # use cookiecutter to create a profile in the config directory
-cookiecutter --output-dir ~/.config/snakemake gh:mbhall88/snakemake-bsub
+cookiecutter --output-dir ~/.config/snakemake gh:mbhall88/snakemake-lsf
 ```
 
-This command will prompt for parameters to set. It will ask to change some default snakemake
+This command will prompt for some default snakemake
 parameters. For information about the parameters see the [docs][snakemake_params].  
-It will ask for a default queue for job submissions (if left empty, by default it will not add a flag for the queue) and the directory to save log files to.
-It will finally ask what the desired profile name is.
+**Ensure the default cluster log directory you set exists before running the pipeline**.  
+
 
 [snakemake_params]: https://snakemake.readthedocs.io/en/stable/executable.html#all-options
 
 Once complete, this will allow you to run snakemake with the cluster
-configuration using the `--profile` flag. For example, if the profile name
-was `bsub`, then you can run:
+profile using the `--profile` flag. For example, if the profile name
+was `lsf`, then you can run:
 
 ```sh
-snakemake --profile bsub {...}
+snakemake --profile lsf [options]
 ```
 
 and pass any other valid snakemake options.
@@ -40,17 +40,15 @@ and pass any other valid snakemake options.
 Individual snakemake rules can have the following parameters specified in the
 Snakemake file:
 
--   `threads`: the number of threads needed for the job. If not specified,
-    assumed to be 1.
+-   `threads`: the number of threads needed for the job. If not specified, will 
+    default to the amount you set when initialising from `cookiecutter`.
 -   `resources`
-    -   `mem_mb`: the memory required for the rule in megabytes, which will be
-        requested if present
+    -   `mem_mb`: the memory required for the rule in megabytes. If not specified, will 
+    default to the amount you set when initialising from `cookiecutter`.
 
-A cluster configuration can be provided to specify additional information:
+A cluster configuration can be provided to specify additional information that overrides 
+the profile defaults:
 
--   `mem_mb`: the memory that will be requested for the rule in megabytes.
-    Overridden by `resources.mem_mb`. If neither provided, use a default value (in
-    cookiecutter configuration).
 -   `queue`: override the default queue for this job.
 -   `logdir`: override the default cluster log directory for this job.
 -   `output`: override the default name of stdout logfile
