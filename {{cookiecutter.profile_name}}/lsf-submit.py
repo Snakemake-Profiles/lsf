@@ -24,9 +24,10 @@ Adapted from: https://github.com/jaicher/snakemake-sync-bq-sub
 """
 
 import sys
+import re
+import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
-from snakemake.shell import shell
 
 
 DEFAULT_NAME = "jobname"
@@ -73,19 +74,23 @@ queue_cmd = "-q {queue}" if queue else ""
 cluster_cmd = " ".join(sys.argv[1:-1])
 
 # command to submit to cluster
-submit_cmd = "bsub "
-
-
-# run commands
-shell(
-    submit_cmd
-    + " "
-    + resources_cmd
-    + " "
-    + jobinfo_cmd
-    + " "
-    + queue_cmd
-    + " "
-    + cluster_cmd
-    + " {jobscript}"
+submit_cmd = "bsub {resources} {job_info} {queue} {cluster} {{jobscript}}".format(
+    resources=resources_cmd, job_info=jobinfo_cmd, queue=queue_cmd, cluster=cluster_cmd
 )
+
+
+try:
+    response = subprocess.run(
+        submit_cmd, check=True, shell=True, stdout=subprocess.PIPE
+    )
+except subprocess.CalledProcessError as error:
+    raise error
+
+# Get jobid
+response_stdout = response.stdout.decode()
+try:
+    match = re.search("Job <(\d+)> is submitted", response_stdout)
+    jobid = match.group(1)
+    print(jobid)
+except Exception as error:
+    raise error
