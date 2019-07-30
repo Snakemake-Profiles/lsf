@@ -4,3 +4,4 @@ use-singularity: {{cookiecutter.use_singularity}}
 restart-times: {{cookiecutter.restart_times}}
 jobs: {{cookiecutter.jobs}}
 cluster: "lsf-submit.py"
+cluster-status: "lsf-status.py"
