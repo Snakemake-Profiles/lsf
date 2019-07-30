@@ -50,13 +50,13 @@ else:
     jobname = cluster.get("jobname", "{0}.{1}".format(name, wildcards_str))
 
 
-threads = job.get("threads", int("{{cookiecutter.default_threads}}"))
+threads = job.get("threads", int({{cookiecutter.default_threads}}))
 resources = job.get("resources", dict())
 # get the memory usage in megabytes that we will request
 mem_mb = resources.get(
     "mem_mb",  # first see if the job itself specifies the memory it needs
     # if not, check if the cluster configuration gives guidance
-    cluster.get("mem_mb", int("{{cookiecutter.default_mem_mb}}")),
+    cluster.get("mem_mb", int({{cookiecutter.default_mem_mb}})),
 )
 
 log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
@@ -74,8 +74,12 @@ queue_cmd = "-q {queue}" if queue else ""
 cluster_cmd = " ".join(sys.argv[1:-1])
 
 # command to submit to cluster
-submit_cmd = "bsub {resources} {job_info} {queue} {cluster} {{jobscript}}".format(
-    resources=resources_cmd, job_info=jobinfo_cmd, queue=queue_cmd, cluster=cluster_cmd
+submit_cmd = "bsub {resources} {job_info} {queue} {cluster} {jobscript}".format(
+    resources=resources_cmd,
+    job_info=jobinfo_cmd,
+    queue=queue_cmd,
+    cluster=cluster_cmd,
+    jobscript=jobscript,
 )
 
 
