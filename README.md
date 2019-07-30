@@ -1,4 +1,4 @@
-# Snakemake sync LSF profile
+# Snakemake LSF profile
 
 [Snakemake profile][profile] for running jobs on a [LSF][lsf] cluster.
 Inspired by [jaicher/snakemake-sync-bq-sub][original].  
