@@ -15,7 +15,7 @@ pip) by running:
 # make sure configuration directory snakemake looks for profiles in exists
 mkdir -p ~/.config/snakemake
 # use cookiecutter to create a profile in the config directory
-cookiecutter --output-dir ~/.config/snakemake gh:mbhall88/snakemake-lsf
+cookiecutter --output-dir ~/.config/snakemake gh:Snakemake-Profiles/snakemake-lsf
 ```
 
 This command will prompt for some default snakemake
