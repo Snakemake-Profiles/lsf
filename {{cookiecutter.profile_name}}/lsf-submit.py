@@ -66,6 +66,12 @@ def get_job_name(job_properties: dict) -> str:
 
 def generate_jobinfo_command(job_properties: dict) -> str:
     log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
+
+    if not log_dir.absolute().exists():
+        raise NotADirectoryError(
+            "Log directory does not exist: {}".format(str(log_dir.absolute()))
+        )
+
     jobname = get_job_name(job_properties)
     out_log = str(log_dir / cluster.get("output", "{}.out".format(jobname)))
     err_log = str(log_dir / cluster.get("error", "{}.err".format(jobname)))
