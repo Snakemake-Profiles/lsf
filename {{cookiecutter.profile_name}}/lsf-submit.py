@@ -66,15 +66,17 @@ def get_job_name(job_properties: dict) -> str:
 
 def generate_jobinfo_command(job_properties: dict) -> str:
     log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
-
-    if not log_dir.absolute().exists():
-        raise NotADirectoryError(
-            "Log directory does not exist: {}".format(str(log_dir.absolute()))
-        )
+    log_dir.mkdir(parents=True, exist_ok=True)
 
     jobname = get_job_name(job_properties)
-    out_log = str(log_dir / cluster.get("output", "{}.out".format(jobname)))
-    err_log = str(log_dir / cluster.get("error", "{}.err".format(jobname)))
+   
+    out_log = log_dir / cluster.get("output", "{}.out".format(jobname))
+    out_log_parent = out_log.parent
+    out_log_parent.mkdir(parents=True,	exist_ok=True)
+
+    err_log = log_dir / cluster.get("error", "{}.err".format(jobname))
+    err_log_parent = err_log.parent
+    err_log_parent.mkdir(parents=True,	exist_ok=True)
 
     return '-o "{out_log}" -e "{err_log}" -J "{jobname}"'.format(
         out_log=out_log, err_log=err_log, jobname=jobname
