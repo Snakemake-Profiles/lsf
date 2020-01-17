@@ -30,7 +30,7 @@ def get_status_for_snakemake(job_status: str) -> str:
 
     if status == "unknown":
         print(
-            "Got an unknown job status {}. Defaulting to '{}'...".format(
+            "Got an unknown job status: {} \nDefaulting to '{}'...".format(
                 job_status, FAILED
             ),
             file=sys.stderr,
@@ -58,11 +58,13 @@ def main():
     jobid = int(sys.argv[1])
 
     stdout, stderr = query_status(jobid)
+    stdout_is_empty = not stdout.strip()
 
     tries = 0
-    while query_status_failed(stderr, jobid) and tries < TRY_TIMES:
+    while (query_status_failed(stderr, jobid) or stdout_is_empty) and tries < TRY_TIMES:
         time.sleep(WAIT_BETWEEN_TRIES)
         stdout, stderr = query_status(jobid)
+        stdout_is_empty = not stdout.strip()
         tries += 1
 
     job_status = stdout
