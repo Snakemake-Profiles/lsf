@@ -24,10 +24,10 @@ Adapted from: https://github.com/jaicher/snakemake-sync-bq-sub
 """
 
 import sys
-import re
 import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
+from typing import Tuple
 
 
 DEFAULT_NAME = "jobname"
@@ -64,30 +64,34 @@ def get_job_name(job_properties: dict) -> str:
     return jobname
 
 
-def generate_jobinfo_command(job_properties: dict) -> str:
+def get_outlog_errorlog_and_jobname (job_properties: dict) -> Tuple[str, str, str]:
     log_dir = Path(cluster.get("logdir", "{{cookiecutter.default_cluster_logdir}}"))
     log_dir.mkdir(parents=True, exist_ok=True)
 
     jobname = get_job_name(job_properties)
+    jobid = job_properties.get("jobid")
    
-    out_log = log_dir / cluster.get("output", "{}.out".format(jobname))
+    out_log = log_dir / "{}.out".format(jobid)
     out_log_parent = out_log.parent
-    out_log_parent.mkdir(parents=True,	exist_ok=True)
+    out_log_parent.mkdir(parents=True, exist_ok=True)
+    if out_log.exists():
+        out_log.unlink()
 
-    err_log = log_dir / cluster.get("error", "{}.err".format(jobname))
+    err_log = log_dir / "{}.err".format(jobid)
     err_log_parent = err_log.parent
-    err_log_parent.mkdir(parents=True,	exist_ok=True)
+    err_log_parent.mkdir(parents=True, exist_ok=True)
+    if err_log.exists():
+        err_log.unlink()
 
-    return '-o "{out_log}" -e "{err_log}" -J "{jobname}"'.format(
-        out_log=out_log, err_log=err_log, jobname=jobname
-    )
+    return out_log, err_log, jobname
 
 
 jobscript = sys.argv[-1]
 job_properties = read_job_properties(jobscript)
 cluster = job_properties.get("cluster", dict())
 
-jobinfo_cmd = generate_jobinfo_command(job_properties)
+out_log, err_log, jobname = get_outlog_errorlog_and_jobname(job_properties)
+jobinfo_cmd = '-o "{out_log}" -e "{err_log}" -J "{jobname}"'.format(out_log=out_log, err_log=err_log, jobname=jobname)
 
 resources_cmd = generate_resources_command(job_properties)
 
@@ -113,11 +117,4 @@ try:
 except subprocess.CalledProcessError as error:
     raise error
 
-# Get jobid
-response_stdout = response.stdout.decode()
-try:
-    match = re.search(r"Job <(\d+)> is submitted", response_stdout)
-    jobid = match.group(1)
-    print(jobid)
-except Exception as error:
-    raise error
+print(out_log)
