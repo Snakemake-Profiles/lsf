@@ -29,7 +29,7 @@ class LSF_Status_Checker:
         "UNKWN": RUNNING,
     }
 
-    def __init__(self, jobid: int, outlog: str, WAIT_BETWEEN_TRIES: int = 5, TRY_TIMES: int = 3):
+    def __init__(self, jobid: int, outlog: str, WAIT_BETWEEN_TRIES: float = 5, TRY_TIMES: int = 3):
         self._jobid = jobid
         self._outlog = outlog
         self.WAIT_BETWEEN_TRIES = WAIT_BETWEEN_TRIES
