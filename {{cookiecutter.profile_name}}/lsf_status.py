@@ -54,7 +54,7 @@ class LSF_Status_Checker:
         if stdout_is_empty:
             raise BjobsError("bjobs error.\nstdout is empty.\nstderr = {stderr}".format(stderr=error_stream))
 
-        return self.STATUS_TABLE.get(output_stream)
+        return self.STATUS_TABLE[output_stream]
 
     def _get_lines_of_log_file(self) -> List[str]:
         with open(self.outlog) as out_log_filehandler:
@@ -101,6 +101,6 @@ class LSF_Status_Checker:
 
 if __name__ == "__main__":
     jobid = int(sys.argv[1])
-    outlog = sys.argv[1]
+    outlog = sys.argv[2]
     lsf_status_checker = LSF_Status_Checker(jobid, outlog)
     print(lsf_status_checker.get_status())

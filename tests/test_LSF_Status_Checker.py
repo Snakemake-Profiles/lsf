@@ -127,7 +127,6 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         actual = lsf_status_checker.get_status()
         expected = "success"
         self.assertEqual(actual, expected)
-        print(run_process_and_get_output_and_error_stream_mock.call_args_list)
         for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
             args, kwargs = call
             self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
@@ -156,7 +155,6 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         actual = lsf_status_checker.get_status()
         expected = "running"
         self.assertEqual(actual, expected)
-        print(run_process_and_get_output_and_error_stream_mock.call_args_list)
         for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
             args, kwargs = call
             self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
@@ -180,12 +178,32 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         actual = lsf_status_checker.get_status()
         expected = "failed"
         self.assertEqual(actual, expected)
-        print(run_process_and_get_output_and_error_stream_mock.call_args_list)
         for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
             args, kwargs = call
             self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
 
 
+
+
+
+
+
+
+
+
+
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("",""))
+    def test____query_status_using_bjobs___empty_stdout___raises_BjobsError(self, run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        self.assertRaises(BjobsError, lsf_status_checker._query_status_using_bjobs)
+        run_process_and_get_output_and_error_stream_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
+
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("asd", ""))
+    def test____query_status_using_bjobs___unknown_job_status___raises_KeyError(self,
+                                                                            run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        self.assertRaises(KeyError, lsf_status_checker._query_status_using_bjobs)
+        run_process_and_get_output_and_error_stream_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
 if __name__ == '__main__':
     unittest.main()
