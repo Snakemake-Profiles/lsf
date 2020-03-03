@@ -30,6 +30,7 @@ from snakemake.utils import read_job_properties
 from typing import List
 from .CookieCutter import CookieCutter
 from .OSLayer import OSLayer
+sys.path.append(str(Path().absolute()))
 
 
 class LSF_Submit:

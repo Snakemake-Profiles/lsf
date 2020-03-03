@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path().absolute()))
+
+
 class CookieCutter:
     """
     Cookie Cutter wrapper

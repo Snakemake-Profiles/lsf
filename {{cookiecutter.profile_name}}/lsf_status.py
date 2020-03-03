@@ -5,6 +5,8 @@ import time
 from typing import List
 from .OSLayer import OSLayer
 from subprocess import CalledProcessError
+from pathlib import Path
+sys.path.append(str(Path().absolute()))
 
 
 class BjobsError(Exception):
