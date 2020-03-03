@@ -8,6 +8,12 @@ count_fail_three_times_and_then_return_DONE=0
 count_fail_three_times_and_then_return_PEND=0
 count_fail_three_times_and_then_return_FAIL=0
 
+def assert_called_n_times_with_same_args(mock, n, args):
+    assert mock.call_count == n
+    for call in mock.call_args_list:
+        call_args, _ = call
+        assert " ".join(call_args) == args
+
 class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("PEND", ""))
     def test___get_status___bjobs_says_process_is_PEND___job_status_is_running(self, run_process_and_get_output_and_error_stream_mock):
@@ -105,7 +111,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__)
-    def test___get_status___bjobs_fails_three_times_but_works_on_the_last___job_status_is_success(self,
+    def test___get_status___bjobs_fails_three_times_but_says_DONE_in_the_fourth___job_status_is_success(self,
                                                                                     run_process_and_get_output_and_error_stream_mock):
         def fail_three_times_and_then_return_DONE(cmd):
             global count_fail_three_times_and_then_return_DONE
@@ -123,17 +129,15 @@ class Test_LSF_Status_Checker(unittest.TestCase):
 
         run_process_and_get_output_and_error_stream_mock.side_effect = fail_three_times_and_then_return_DONE
 
-        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
         actual = lsf_status_checker.get_status()
         expected = "success"
         self.assertEqual(actual, expected)
-        for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
-            args, kwargs = call
-            self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4, "bjobs -o 'stat' -noheader 123")
 
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__)
-    def test___get_status___bjobs_fails_three_times_but_bjobs_says_PEND_on_the_last___job_status_is_running(self,
+    def test___get_status___bjobs_fails_three_times_but_says_PEND_in_the_fourth___job_status_is_running(self,
                                                                                     run_process_and_get_output_and_error_stream_mock):
         def fail_three_times_and_then_return_PEND(cmd):
             global count_fail_three_times_and_then_return_PEND
@@ -151,17 +155,14 @@ class Test_LSF_Status_Checker(unittest.TestCase):
 
         run_process_and_get_output_and_error_stream_mock.side_effect = fail_three_times_and_then_return_PEND
 
-        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
         actual = lsf_status_checker.get_status()
         expected = "running"
         self.assertEqual(actual, expected)
-        for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
-            args, kwargs = call
-            self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4, "bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__)
-    def test___get_status___bjobs_fails_one_but_bjobs_says_EXIT_on_the_last___job_status_is_failed(self,
-                                                                                                            run_process_and_get_output_and_error_stream_mock):
+    def test___get_status___bjobs_fails_one_but_says_EXIT_in_the_fourth___job_status_is_failed(self, run_process_and_get_output_and_error_stream_mock):
         def fail_one_time_and_then_return_FAIL(cmd):
             global count_fail_three_times_and_then_return_FAIL
             count_fail_three_times_and_then_return_FAIL += 1
@@ -174,36 +175,99 @@ class Test_LSF_Status_Checker(unittest.TestCase):
 
         run_process_and_get_output_and_error_stream_mock.side_effect = fail_one_time_and_then_return_FAIL
 
-        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
         actual = lsf_status_checker.get_status()
         expected = "failed"
         self.assertEqual(actual, expected)
-        for call in run_process_and_get_output_and_error_stream_mock.call_args_list:
-            args, kwargs = call
-            self.assertEqual(" ".join(args), "bjobs -o 'stat' -noheader 123")
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 2, "bjobs -o 'stat' -noheader 123")
+
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect=BjobsError)
+    @patch.object(LSF_Status_Checker, LSF_Status_Checker._get_lines_of_log_file.__name__,
+                  return_value=["Successfully completed.", "", "Resource usage summary:"])
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_success(self,
+                                                                                                   get_lines_of_log_file_mock,
+                                                                                                   run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker.get_status()
+        expected = "success"
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4, "bjobs -o 'stat' -noheader 123")
+        get_lines_of_log_file_mock.assert_called_once_with()
+
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect=BjobsError)
+    @patch.object(LSF_Status_Checker, LSF_Status_Checker._get_lines_of_log_file.__name__,
+                  return_value=["Exited with exit code 1.", "", "Resource usage summary:"])
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_failed(self,
+                                                                                                   get_lines_of_log_file_mock,
+                                                                                                   run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker.get_status()
+        expected = "failed"
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4,
+                                             "bjobs -o 'stat' -noheader 123")
+        get_lines_of_log_file_mock.assert_called_once_with()
 
 
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect=BjobsError)
+    @patch.object(LSF_Status_Checker, LSF_Status_Checker._get_lines_of_log_file.__name__, side_effect=FileNotFoundError)
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_does_not_yet_exists___job_status_is_running(self,
+                                                                                                   get_lines_of_log_file_mock,
+                                                                                                   run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker.get_status()
+        expected = "running"
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4,
+                                             "bjobs -o 'stat' -noheader 123")
+        get_lines_of_log_file_mock.assert_called_once_with()
 
 
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect=BjobsError)
+    @patch.object(LSF_Status_Checker, LSF_Status_Checker._get_lines_of_log_file.__name__, return_value=["...", "..."])
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_exit_info_not_yet_written___job_status_is_running(self,
+                                                                                                   get_lines_of_log_file_mock,
+                                                                                                   run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker.get_status()
+        expected = "running"
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4,
+                                             "bjobs -o 'stat' -noheader 123")
+        get_lines_of_log_file_mock.assert_called_once_with()
 
 
-
-
-
-
+    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect=BjobsError)
+    @patch.object(LSF_Status_Checker, LSF_Status_Checker._get_lines_of_log_file.__name__, return_value=["Successfully completed.", ""])
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_resource_line_does_not_exist___job_status_is_running(self,
+                                                                                                   get_lines_of_log_file_mock,
+                                                                                                   run_process_and_get_output_and_error_stream_mock):
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker.get_status()
+        expected = "running"
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(run_process_and_get_output_and_error_stream_mock, 4,
+                                             "bjobs -o 'stat' -noheader 123")
+        get_lines_of_log_file_mock.assert_called_once_with()
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("",""))
     def test____query_status_using_bjobs___empty_stdout___raises_BjobsError(self, run_process_and_get_output_and_error_stream_mock):
-        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
         self.assertRaises(BjobsError, lsf_status_checker._query_status_using_bjobs)
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("asd", ""))
     def test____query_status_using_bjobs___unknown_job_status___raises_KeyError(self,
                                                                             run_process_and_get_output_and_error_stream_mock):
-        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.1, TRY_TIMES=4)
+        lsf_status_checker = LSF_Status_Checker(123, "dummy", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
         self.assertRaises(KeyError, lsf_status_checker._query_status_using_bjobs)
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
+
+    def test____get_lines_of_log_file(self):
+        lsf_status_checker = LSF_Status_Checker(123, "test_file.txt", WAIT_BETWEEN_TRIES=0.001, TRY_TIMES=4)
+        actual = lsf_status_checker._get_lines_of_log_file()
+        expected=["abcd", "1234"]
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

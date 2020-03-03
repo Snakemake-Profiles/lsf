@@ -75,7 +75,7 @@ class LSF_Status_Checker:
             return self.RUNNING
 
     # NB: only this function is tested - we just want to test the behaviour of get_status()
-    # All the other functions are also tested, as we mock the OSLayer
+    # All the other functions are indirectly tested, as we mock the OSLayer
     def get_status(self) -> str:
         status = None
         for _ in range(self.TRY_TIMES):

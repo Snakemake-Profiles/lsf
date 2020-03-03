@@ -31,6 +31,7 @@ from typing import List
 from .CookieCutter import CookieCutter
 from .OSLayer import OSLayer
 
+# TODO: add a random string to the out/error log to avoid two different runs having the same jobid for different jobs (not sure jobs have always the same id)
 # TODO: test trivial methods with a jobscript
 # TODO: test the other methods with mock
 # TODO: use https://stackoverflow.com/questions/22677280/checking-call-order-across-multiple-mocks
@@ -115,11 +116,11 @@ class LSF_Submit:
 
     @property
     def outlog(self):
-        return self.logdir / "{jobid}.out".format(jobid=self.jobid)
+        return self.logdir / "cluster_checkpoints/{jobid}.out".format(jobid=self.jobid)
 
     @property
     def errlog(self):
-        return self.logdir / "{jobid}.err".format(jobid=self.jobid)
+        return self.logdir / "cluster_checkpoints/{jobid}.err".format(jobid=self.jobid)
 
     @property
     def jobinfo_cmd(self):
