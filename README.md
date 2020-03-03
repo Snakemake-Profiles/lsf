@@ -1,12 +1,24 @@
 # Snakemake LSF profile
 
 [Snakemake profile][profile] for running jobs on a [LSF][lsf] cluster.
-Inspired by [jaicher/snakemake-sync-bq-sub][original].  
+Inspired by [Snakemake-Profiles/snakemake-lsf][original].
+
+# Main changes
+
+This profile further searches in the LSF log to check the job status if `bjobs` fail.
+
+In the cluster I use, sometimes `bjobs` behave inconsistently (although 99% of the time, it behaves correctly),
+usually in very large pipelines.
+
+This has the unfortunate effect of failing these very large pipelines. However, even if `bjobs` fails,
+LSF still correctly write the job status to the log.   
+
+# Deploy
 
 Deploy using [cookiecutter][cookiecutter-repo] (easily installed using conda or
 pip) by running:
 
-[original]: https://github.com/jaicher/snakemake-sync-bq-sub
+[original]: https://github.com/Snakemake-Profiles/snakemake-lsf
 [profile]: https://snakemake.readthedocs.io/en/stable/executable.html#profiles
 [lsf]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html
 [cookiecutter-repo]: https://github.com/audreyr/cookiecutter
@@ -15,7 +27,7 @@ pip) by running:
 # make sure configuration directory snakemake looks for profiles in exists
 mkdir -p ~/.config/snakemake
 # use cookiecutter to create a profile in the config directory
-cookiecutter --output-dir ~/.config/snakemake gh:Snakemake-Profiles/snakemake-lsf
+cookiecutter --output-dir ~/.config/snakemake gh:leoisl/snakemake-lsf --checkout checking_lsf_log_if_bjobs_fails
 ```
 
 This command will prompt for some default snakemake
