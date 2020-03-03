@@ -31,17 +31,13 @@ from typing import List
 from .CookieCutter import CookieCutter
 from .OSLayer import OSLayer
 
-# TODO: add a random string to the out/error log to avoid two different runs having the same jobid for different jobs (not sure jobs have always the same id)
-# TODO: test trivial methods with a jobscript
-# TODO: test the other methods with mock
-# TODO: use https://stackoverflow.com/questions/22677280/checking-call-order-across-multiple-mocks
-
 
 class LSF_Submit:
     def __init__(self, argv: List[str]):
         self._jobscript = argv[-1]
         self._cluster_cmd = " ".join(argv[1:-1])
         self._job_properties = read_job_properties(self._jobscript)
+        self.random_string = OSLayer.get_random_alphanumerical_string()
 
     @property
     def jobscript(self):
@@ -116,11 +112,11 @@ class LSF_Submit:
 
     @property
     def outlog(self):
-        return self.logdir / "cluster_checkpoints/{jobid}.out".format(jobid=self.jobid)
+        return self.logdir / "cluster_checkpoints/{jobid}_{random_string}.out".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
     def errlog(self):
-        return self.logdir / "cluster_checkpoints/{jobid}.err".format(jobid=self.jobid)
+        return self.logdir / "cluster_checkpoints/{jobid}_{random_string}.err".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
     def jobinfo_cmd(self):
@@ -152,7 +148,6 @@ class LSF_Submit:
         OSLayer.mkdir(self.logdir)
 
     def _remove_previous_logs(self):
-        # TODO: might be interesting to keep the previous logs...
         OSLayer.remove_file(self.outlog)
         OSLayer.remove_file(self.errlog)
 
@@ -168,7 +163,7 @@ class LSF_Submit:
 
     def submit(self):
         self._create_logdir()
-        self._remove_previous_logs()
+        self._remove_previous_logs() # we could be very unlucky of having the same 64-length random string with the same jobid
         try:
             external_job_id = self._submit_cmd_and_get_external_job_id()
             information_to_status_script = self._get_information_to_status_script(external_job_id)

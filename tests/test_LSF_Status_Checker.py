@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from tests.src.lsf_status import LSF_Status_Checker, BjobsError
 from tests.src.OSLayer import OSLayer
 from subprocess import CalledProcessError

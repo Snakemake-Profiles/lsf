@@ -1,0 +1,3 @@
+#!/bin/sh
+# properties = {"type": "single", "rule": "bulk_search_fasta_in_an_index", "local": false, "input": ["/hps/nobackup/research/zi/leandro/BIGSI/snakemake/fasta.txt", "/hps/nobackup/research/zi/gblackwell/700K_ena_assemblies/berkdbConfigs/binGtt6Ltt7_configs/config_1k_000.yaml"], "output": ["bigsi_search_out_profile_test/intermediate_jsons/result_0.json"], "wildcards": {"i": "0"}, "params": {"threshold": 1.0, "cache_mem_gb": 2}, "log": ["logs/bulk_search_fasta_in_an_index.0.log"], "threads": 1, "resources": {"mem_mb": 2662}, "jobid": 2, "cluster": {"queue": "q1"}}
+echo "whatever_command"
