@@ -99,3 +99,6 @@ class Test_LSF_Submit(unittest.TestCase):
             "real_jobscript.sh"
         )
         print_mock.assert_not_called()
+
+if __name__ == '__main__':
+    unittest.main()
