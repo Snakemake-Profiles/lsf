@@ -28,6 +28,7 @@ import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
 from typing import List
+import re
 if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
     from OSLayer import OSLayer
@@ -158,9 +159,11 @@ class LSF_Submit:
 
     def _submit_cmd_and_get_external_job_id(self):
         output_stream, error_stream = OSLayer.run_process_and_get_output_and_error_stream(self.submit_cmd)
-        return output_stream
+        match = re.search(r"Job <(\d+)> is submitted", output_stream)
+        jobid = match.group(1)
+        return int(jobid)
 
-    def _get_information_to_status_script(self, external_job_id):
+    def _get_information_to_status_script(self, external_job_id: int):
         return "{external_job_id} {outlog}".format(
             external_job_id=external_job_id,
             outlog=self.outlog
@@ -174,6 +177,8 @@ class LSF_Submit:
             information_to_status_script = self._get_information_to_status_script(external_job_id)
             OSLayer.print(information_to_status_script)
         except subprocess.CalledProcessError as error:
+            raise error
+        except AttributeError as error:
             raise error
 
 
