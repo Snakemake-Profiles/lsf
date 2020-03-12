@@ -26,18 +26,18 @@ class Test_LSF_Submit(unittest.TestCase):
         self.assertEqual(lsf_submit.resources_cmd, "-M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]'")
         self.assertEqual(lsf_submit.jobname, "bulk_search_fasta_in_an_index.i=0")
         self.assertEqual(lsf_submit.logdir, Path("logdir"))
-        self.assertEqual(lsf_submit.outlog, Path("logdir")/"cluster_checkpoints/2_random.out")
-        self.assertEqual(lsf_submit.errlog, Path("logdir")/"cluster_checkpoints/2_random.err")
-        self.assertEqual(lsf_submit.jobinfo_cmd, '-o "logdir/cluster_checkpoints/2_random.out" -e "logdir/cluster_checkpoints/2_random.err" -J "bulk_search_fasta_in_an_index.i=0"')
+        self.assertEqual(lsf_submit.outlog, Path("logdir")/"2_random.out")
+        self.assertEqual(lsf_submit.errlog, Path("logdir")/"2_random.err")
+        self.assertEqual(lsf_submit.jobinfo_cmd, '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "bulk_search_fasta_in_an_index.i=0"')
         self.assertEqual(lsf_submit.queue_cmd, '-q q1')
         self.assertEqual(lsf_submit.submit_cmd, "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-                                                "-o \"logdir/cluster_checkpoints/2_random.out\" -e \"logdir/cluster_checkpoints/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+                                                "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
                                                 "-q q1 "
                                                 "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
                                                 "real_jobscript.sh")
 
     @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__,
-                  return_value=("Job <8697223> is submitted to default queue <research-rh74>. logs/cluster/cluster_checkpoints/2_z137TAmCoQGdWHohm5m2zHH5E5MWxmTUJTdU1Uj3iqKVILs4n3R37nruIEJBcQoi.out", ""))
+                  return_value=("Job <8697223> is submitted to default queue <research-rh74>. logs/cluster/2_z137TAmCoQGdWHohm5m2zHH5E5MWxmTUJTdU1Uj3iqKVILs4n3R37nruIEJBcQoi.out", ""))
     @patch.object(CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir")
     @patch.object(CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000)
     @patch.object(CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8)
@@ -82,16 +82,16 @@ class Test_LSF_Submit(unittest.TestCase):
 
         mkdir_mock.assert_called_once_with(Path("logdir"))
         self.assertEqual(remove_file_mock.call_count, 2)
-        remove_file_mock.assert_any_call(Path("logdir/cluster_checkpoints/2_random.out"))
-        remove_file_mock.assert_any_call(Path("logdir/cluster_checkpoints/2_random.err"))
+        remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
+        remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-            "-o \"logdir/cluster_checkpoints/2_random.out\" -e \"logdir/cluster_checkpoints/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh"
         )
-        print_mock.assert_called_once_with("123456 logdir/cluster_checkpoints/2_random.out")
+        print_mock.assert_called_once_with("123456 logdir/2_random.out")
 
     @patch.object(CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir")
     @patch.object(CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000)
@@ -114,11 +114,11 @@ class Test_LSF_Submit(unittest.TestCase):
 
         mkdir_mock.assert_called_once_with(Path("logdir"))
         self.assertEqual(remove_file_mock.call_count, 2)
-        remove_file_mock.assert_any_call(Path("logdir/cluster_checkpoints/2_random.out"))
-        remove_file_mock.assert_any_call(Path("logdir/cluster_checkpoints/2_random.err"))
+        remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
+        remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-            "-o \"logdir/cluster_checkpoints/2_random.out\" -e \"logdir/cluster_checkpoints/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh"

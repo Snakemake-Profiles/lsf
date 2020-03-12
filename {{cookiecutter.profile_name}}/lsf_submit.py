@@ -118,11 +118,11 @@ class LSF_Submit:
 
     @property
     def outlog(self):
-        return self.logdir / "cluster_checkpoints/{jobid}_{random_string}.out".format(jobid=self.jobid, random_string=self.random_string)
+        return self.logdir / "{jobid}_{random_string}.out".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
     def errlog(self):
-        return self.logdir / "cluster_checkpoints/{jobid}_{random_string}.err".format(jobid=self.jobid, random_string=self.random_string)
+        return self.logdir / "{jobid}_{random_string}.err".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
     def jobinfo_cmd(self):
