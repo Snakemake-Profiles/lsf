@@ -23,7 +23,7 @@ class OSLayer:
     @staticmethod
     def run_process_and_get_output_and_error_stream(cmd: str) -> Tuple[str, str]:
         completed_process = subprocess.run(
-            cmd, check=True, shell=True, capture_output=True
+            cmd, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         return completed_process.stdout.decode().strip(), completed_process.stderr.decode().strip()
 
