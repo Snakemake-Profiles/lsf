@@ -28,9 +28,13 @@ import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
 from typing import List
-from .CookieCutter import CookieCutter
-from .OSLayer import OSLayer
-sys.path.append(str(Path().absolute()))
+if not __name__.startswith("tests.src."):
+    sys.path.append(str(Path(__file__).parent.absolute()))
+    from OSLayer import OSLayer
+    from CookieCutter import CookieCutter
+else:
+    from .OSLayer import OSLayer
+    from .CookieCutter import CookieCutter
 
 
 class LSF_Submit:

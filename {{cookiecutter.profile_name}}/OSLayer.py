@@ -3,8 +3,6 @@ import subprocess
 from typing import Tuple
 import random
 import string
-import sys
-sys.path.append(str(Path().absolute()))
 
 
 class OSLayer:

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import sys
 import time
 from typing import List
-from .OSLayer import OSLayer
 from subprocess import CalledProcessError
+import sys
 from pathlib import Path
-sys.path.append(str(Path().absolute()))
+if not __name__.startswith("tests.src."):
+    sys.path.append(str(Path(__file__).parent.absolute()))
+    from OSLayer import OSLayer
+else:
+    from .OSLayer import OSLayer
 
 
 class BjobsError(Exception):
