@@ -72,11 +72,11 @@ def generate_jobinfo_command(job_properties: dict) -> str:
    
     out_log = log_dir / cluster.get("output", "{}.out".format(jobname))
     out_log_parent = out_log.parent
-    out_log_parent.mkdir(parents=True,	exist_ok=True)
+    out_log_parent.mkdir(parents=True, exist_ok=True)
 
     err_log = log_dir / cluster.get("error", "{}.err".format(jobname))
     err_log_parent = err_log.parent
-    err_log_parent.mkdir(parents=True,	exist_ok=True)
+    err_log_parent.mkdir(parents=True, exist_ok=True)
 
     return '-o "{out_log}" -e "{err_log}" -J "{jobname}"'.format(
         out_log=out_log, err_log=err_log, jobname=jobname
