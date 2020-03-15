@@ -100,17 +100,15 @@ class LSF_Submit:
     def jobname(self) -> str:
         if self.is_group_jobtype:
             return "{groupid}_{jobid}".format(groupid=self.groupid, jobid=self.jobid)
-        else:
-            return self.cluster.get("jobname",
-                                    "{rule_name}.{wildcards_str}".format(rule_name=self.rule_name,
-                                                                         wildcards_str=self.wildcards_str))
+        return self.cluster.get("jobname",
+                                "{rule_name}.{wildcards_str}".format(rule_name=self.rule_name,
+                                                                     wildcards_str=self.wildcards_str))
 
     @property
     def jobid(self) -> int:
         if self.is_group_jobtype:
             return int(self.job_properties.get("jobid", "").split("-")[0])
-        else:
-            return int(self.job_properties.get("jobid"))
+        return int(self.job_properties.get("jobid"))
 
     @property
     def logdir(self) -> Path:
