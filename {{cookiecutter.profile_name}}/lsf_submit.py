@@ -175,8 +175,10 @@ class LSF_Submit:
             information_to_status_script = self._get_information_to_status_script(external_job_id)
             OSLayer.print(information_to_status_script)
         except subprocess.CalledProcessError as error:
+            print("bsub invocation error: {error}".format(error=error), file=sys.stderr)
             raise error
         except AttributeError as error:
+            print("Could not find the jobid from bsub output stream: {error}".format(error=error), file=sys.stderr)
             raise error
 
 
