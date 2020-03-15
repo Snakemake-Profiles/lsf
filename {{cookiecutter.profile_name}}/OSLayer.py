@@ -17,7 +17,7 @@ class OSLayer:
 
     @staticmethod
     def remove_file(file: Path):
-        if file.exists():
+        if file.is_file():
             file.unlink()
 
     @staticmethod
