@@ -41,11 +41,11 @@ class LSF_Status_Checker:
         self.TRY_TIMES = TRY_TIMES
 
     @property
-    def jobid(self):
+    def jobid(self) -> int:
         return self._jobid
 
     @property
-    def outlog(self):
+    def outlog(self) -> str:
         return self._outlog
 
     @property

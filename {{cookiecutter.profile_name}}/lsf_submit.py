@@ -46,27 +46,27 @@ class LSF_Submit:
         self.random_string = OSLayer.get_random_alphanumerical_string()
 
     @property
-    def jobscript(self):
+    def jobscript(self) -> str:
         return self._jobscript
 
     @property
-    def job_properties(self):
+    def job_properties(self) -> dict:
         return self._job_properties
 
     @property
-    def cluster(self):
+    def cluster(self) -> dict:
         return self.job_properties.get("cluster", dict())
 
     @property
-    def threads(self):
+    def threads(self) -> int:
         return self.job_properties.get("threads", CookieCutter.get_default_threads())
 
     @property
-    def resources(self):
+    def resources(self) -> dict:
         return self.job_properties.get("resources", dict())
 
     @property
-    def mem_mb(self):
+    def mem_mb(self) -> int:
         return self.resources.get("mem_mb", self.cluster.get("mem_mb", CookieCutter.get_default_mem_mb()))
 
     @property
@@ -77,23 +77,23 @@ class LSF_Submit:
         ).format(mem_mb=self.mem_mb, threads=self.threads)
 
     @property
-    def wildcards(self):
+    def wildcards(self) -> dict:
         return self.job_properties.get("wildcards", dict())
 
     @property
-    def wildcards_str(self):
+    def wildcards_str(self) -> str:
         return ".".join("{}={}".format(k, v) for k, v in self.wildcards.items()) or "unique"
 
     @property
-    def rule_name(self):
+    def rule_name(self) -> str:
         return self.job_properties.get("rule", "rule_name")
 
     @property
-    def groupid(self):
+    def groupid(self) -> str:
         return self.job_properties.get("groupid", "group")
 
     @property
-    def is_group_jobtype(self):
+    def is_group_jobtype(self) -> bool:
         return self.job_properties.get("type", "") == "group"
 
     @property
@@ -106,42 +106,42 @@ class LSF_Submit:
                                                                          wildcards_str=self.wildcards_str))
 
     @property
-    def jobid(self):
+    def jobid(self) -> int:
         if self.is_group_jobtype:
-            return self.job_properties.get("jobid", "").split("-")[0]
+            return int(self.job_properties.get("jobid", "").split("-")[0])
         else:
-            return self.job_properties.get("jobid")
+            return int(self.job_properties.get("jobid"))
 
     @property
-    def logdir(self):
+    def logdir(self) -> Path:
         return Path(self.cluster.get("logdir", CookieCutter.get_log_dir()))
 
     @property
-    def outlog(self):
+    def outlog(self) -> Path:
         return self.logdir / "{jobid}_{random_string}.out".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
-    def errlog(self):
+    def errlog(self) -> Path:
         return self.logdir / "{jobid}_{random_string}.err".format(jobid=self.jobid, random_string=self.random_string)
 
     @property
-    def jobinfo_cmd(self):
+    def jobinfo_cmd(self) -> str:
         return '-o "{out_log}" -e "{err_log}" -J "{jobname}"'.format(out_log=self.outlog, err_log=self.errlog, jobname=self.jobname)
 
     @property
-    def queue(self):
+    def queue(self) -> str:
         return self.cluster.get("queue", "")
 
     @property
-    def queue_cmd(self):
+    def queue_cmd(self) -> str:
         return "-q {}".format(self.queue) if self.queue else ""
 
     @property
-    def cluster_cmd(self):
+    def cluster_cmd(self) -> str:
         return self._cluster_cmd
 
     @property
-    def submit_cmd(self):
+    def submit_cmd(self) -> str:
         return "bsub {resources} {job_info} {queue} {cluster} {jobscript}".format(
                     resources=self.resources_cmd,
                     job_info=self.jobinfo_cmd,
@@ -157,13 +157,13 @@ class LSF_Submit:
         OSLayer.remove_file(self.outlog)
         OSLayer.remove_file(self.errlog)
 
-    def _submit_cmd_and_get_external_job_id(self):
+    def _submit_cmd_and_get_external_job_id(self) -> int:
         output_stream, error_stream = OSLayer.run_process_and_get_output_and_error_stream(self.submit_cmd)
         match = re.search(r"Job <(\d+)> is submitted", output_stream)
         jobid = match.group(1)
         return int(jobid)
 
-    def _get_information_to_status_script(self, external_job_id: int):
+    def _get_information_to_status_script(self, external_job_id: int) -> str:
         return "{external_job_id} {outlog}".format(
             external_job_id=external_job_id,
             outlog=self.outlog
