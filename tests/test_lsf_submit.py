@@ -21,17 +21,17 @@ class Test_LSF_Submit(unittest.TestCase):
         self.assertEqual(lsf_submit.mem_mb, 2662)
         self.assertEqual(lsf_submit.jobid, 2)
         self.assertEqual(lsf_submit.wildcards_str, "i=0")
-        self.assertEqual(lsf_submit.rule_name, "bulk_search_fasta_in_an_index")
+        self.assertEqual(lsf_submit.rule_name, "search_fasta_on_index")
         self.assertEqual(lsf_submit.is_group_jobtype, False)
         self.assertEqual(lsf_submit.resources_cmd, "-M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]'")
-        self.assertEqual(lsf_submit.jobname, "bulk_search_fasta_in_an_index.i=0")
+        self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         self.assertEqual(lsf_submit.logdir, Path("logdir"))
         self.assertEqual(lsf_submit.outlog, Path("logdir")/"2_random.out")
         self.assertEqual(lsf_submit.errlog, Path("logdir")/"2_random.err")
-        self.assertEqual(lsf_submit.jobinfo_cmd, '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "bulk_search_fasta_in_an_index.i=0"')
+        self.assertEqual(lsf_submit.jobinfo_cmd, '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0"')
         self.assertEqual(lsf_submit.queue_cmd, '-q q1')
         self.assertEqual(lsf_submit.submit_cmd, "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-                                                "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+                                                "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"search_fasta_on_index.i=0\" "
                                                 "-q q1 "
                                                 "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
                                                 "real_jobscript.sh")
@@ -86,7 +86,7 @@ class Test_LSF_Submit(unittest.TestCase):
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"search_fasta_on_index.i=0\" "
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh"
@@ -118,7 +118,7 @@ class Test_LSF_Submit(unittest.TestCase):
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
         run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
-            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"bulk_search_fasta_in_an_index.i=0\" "
+            "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"search_fasta_on_index.i=0\" "
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh"
