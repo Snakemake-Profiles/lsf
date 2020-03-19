@@ -79,8 +79,6 @@ class LSF_Status_Checker:
         except (FileNotFoundError, ValueError):
             return self.RUNNING
 
-    # NB: only this function is tested - we just want to test the behaviour of get_status()
-    # All the other functions are indirectly tested, as we mock the OSLayer
     def get_status(self) -> str:
         status = None
         for _ in range(self.TRY_TIMES):
@@ -88,17 +86,21 @@ class LSF_Status_Checker:
                 status = self._query_status_using_bjobs()
                 break  # succeeded on getting the status
             except BjobsError as error:
-                print(error, file=sys.stderr)
+                print("[Predicted exception] BjobsError: {error}".format(error=error), file=sys.stderr)
+                print("Resuming...", file=sys.stderr)
                 time.sleep(self.WAIT_BETWEEN_TRIES)
             except KeyError as error:
-                print("Unknown job status: {error}".format(error=error), file=sys.stderr)
+                print("[Predicted exception] Unknown job status: {error}".format(error=error), file=sys.stderr)
+                print("Resuming...", file=sys.stderr)
                 time.sleep(self.WAIT_BETWEEN_TRIES)
             except CalledProcessError as error:
-                print("Error on calling bjobs: {error}".format(error=error), file=sys.stderr)
+                print("[Predicted exception] Error on calling bjobs: {error}".format(error=error), file=sys.stderr)
+                print("Resuming...", file=sys.stderr)
                 time.sleep(self.WAIT_BETWEEN_TRIES)
 
         bjobs_failed = status is None
         if bjobs_failed:
+            print("bjobs failed {try_times} times. Checking log...".format(try_times=self.TRY_TIMES), file=sys.stderr)
             status = self._query_status_using_log()
 
         return status

@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from tests.src.lsf_submit import LSF_Submit
+from tests.src.lsf_submit import LSF_Submit, BsubInvocationError, JobidNotFoundError
 from tests.src.CookieCutter import CookieCutter
 from tests.src.OSLayer import OSLayer
 from pathlib import Path
@@ -58,7 +58,7 @@ class Test_LSF_Submit(unittest.TestCase):
     def test____submit_cmd_and_get_external_job_id___output_stream_has_no_jobid(self, *mocks):
         argv = ["script_name", "cluster_opt_1", "cluster_opt_2", "cluster_opt_3", "real_jobscript.sh"]
         lsf_submit = LSF_Submit(argv)
-        self.assertRaises(AttributeError, lsf_submit.submit)
+        self.assertRaises(JobidNotFoundError, lsf_submit.submit)
 
 
     @patch.object(CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir")
@@ -101,7 +101,7 @@ class Test_LSF_Submit(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.remove_file.__name__)
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect = CalledProcessError(1, "bsub"))
     @patch.object(OSLayer, OSLayer.print.__name__)
-    def test___submit___failed_submit(self,
+    def test___submit___failed_submit_bsub_invocation_error(self,
                                            print_mock,
                                            run_process_mock,
                                            remove_file_mock,
@@ -110,7 +110,7 @@ class Test_LSF_Submit(unittest.TestCase):
         argv = ["script_name", "cluster_opt_1", "cluster_opt_2", "cluster_opt_3", "real_jobscript.sh"]
         lsf_submit = LSF_Submit(argv)
 
-        self.assertRaises(CalledProcessError, lsf_submit.submit)
+        self.assertRaises(BsubInvocationError, lsf_submit.submit)
 
         mkdir_mock.assert_called_once_with(Path("logdir"))
         self.assertEqual(remove_file_mock.call_count, 2)

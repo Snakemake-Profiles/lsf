@@ -38,6 +38,14 @@ else:
     from .CookieCutter import CookieCutter
 
 
+class BsubInvocationError(Exception):
+    pass
+
+
+class JobidNotFoundError(Exception):
+    pass
+
+
 class LSF_Submit:
     def __init__(self, argv: List[str]):
         self._jobscript = argv[-1]
@@ -175,11 +183,9 @@ class LSF_Submit:
             parameters_to_status_script = self._get_parameters_to_status_script(external_job_id)
             OSLayer.print(parameters_to_status_script)
         except subprocess.CalledProcessError as error:
-            print("bsub invocation error: {error}".format(error=error), file=sys.stderr)
-            raise error
+            raise BsubInvocationError(error)
         except AttributeError as error:
-            print("Could not find the jobid from bsub output stream: {error}".format(error=error), file=sys.stderr)
-            raise error
+            raise JobidNotFoundError(error)
 
 
 if __name__ == "__main__":
