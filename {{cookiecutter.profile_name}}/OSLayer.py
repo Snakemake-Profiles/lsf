@@ -20,8 +20,10 @@ class OSLayer:
         if file.is_file():
             file.unlink()
 
+    stdout = str
+    stderr = str
     @staticmethod
-    def run_process_and_get_output_and_error_stream(cmd: str) -> Tuple[str, str]:
+    def run_process(cmd: str) -> Tuple[stdout, stderr]:
         completed_process = subprocess.run(
             cmd, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )

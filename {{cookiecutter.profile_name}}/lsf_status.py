@@ -53,7 +53,7 @@ class LSF_Status_Checker:
         return "bjobs -o 'stat' -noheader {jobid}".format(jobid=self.jobid)
 
     def _query_status_using_bjobs(self) -> str:
-        output_stream, error_stream = OSLayer.run_process_and_get_output_and_error_stream(self.bjobs_query_cmd)
+        output_stream, error_stream = OSLayer.run_process(self.bjobs_query_cmd)
 
         stdout_is_empty = not output_stream.strip()
         if stdout_is_empty:

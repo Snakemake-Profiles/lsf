@@ -36,7 +36,7 @@ class Test_LSF_Submit(unittest.TestCase):
                                                 "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
                                                 "real_jobscript.sh")
 
-    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__,
+    @patch.object(OSLayer, OSLayer.run_process.__name__,
                   return_value=("Job <8697223> is submitted to default queue <research-rh74>. logs/cluster/2_z137TAmCoQGdWHohm5m2zHH5E5MWxmTUJTdU1Uj3iqKVILs4n3R37nruIEJBcQoi.out", ""))
     @patch.object(CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir")
     @patch.object(CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000)
@@ -50,7 +50,7 @@ class Test_LSF_Submit(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("", ""))
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("", ""))
     @patch.object(CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir")
     @patch.object(CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000)
     @patch.object(CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8)
@@ -67,11 +67,11 @@ class Test_LSF_Submit(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.get_random_alphanumerical_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
     @patch.object(OSLayer, OSLayer.remove_file.__name__)
-    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, return_value=("Job <123456> is submitted to default queue <research-rh74>.", ""))
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("Job <123456> is submitted to default queue <research-rh74>.", ""))
     @patch.object(OSLayer, OSLayer.print.__name__)
     def test___submit___successfull_submit(self,
                                            print_mock,
-                                           run_process_and_get_output_and_error_stream_mock,
+                                           run_process_mock,
                                            remove_file_mock,
                                            mkdir_mock,
                                            *uninteresting_mocks):
@@ -84,7 +84,7 @@ class Test_LSF_Submit(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
-        run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
+        run_process_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
             "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"search_fasta_on_index.i=0\" "
             "-q q1 "
@@ -99,11 +99,11 @@ class Test_LSF_Submit(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.get_random_alphanumerical_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
     @patch.object(OSLayer, OSLayer.remove_file.__name__)
-    @patch.object(OSLayer, OSLayer.run_process_and_get_output_and_error_stream.__name__, side_effect = CalledProcessError(1, "bsub"))
+    @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect = CalledProcessError(1, "bsub"))
     @patch.object(OSLayer, OSLayer.print.__name__)
     def test___submit___failed_submit(self,
                                            print_mock,
-                                           run_process_and_get_output_and_error_stream_mock,
+                                           run_process_mock,
                                            remove_file_mock,
                                            mkdir_mock,
                                            *uninteresting_mocks):
@@ -116,7 +116,7 @@ class Test_LSF_Submit(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
-        run_process_and_get_output_and_error_stream_mock.assert_called_once_with(
+        run_process_mock.assert_called_once_with(
             "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
             "-o \"logdir/2_random.out\" -e \"logdir/2_random.err\" -J \"search_fasta_on_index.i=0\" "
             "-q q1 "

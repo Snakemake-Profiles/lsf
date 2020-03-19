@@ -156,7 +156,7 @@ class LSF_Submit:
         OSLayer.remove_file(self.errlog)
 
     def _submit_cmd_and_get_external_job_id(self) -> int:
-        output_stream, error_stream = OSLayer.run_process_and_get_output_and_error_stream(self.submit_cmd)
+        output_stream, error_stream = OSLayer.run_process(self.submit_cmd)
         match = re.search(r"Job <(\d+)> is submitted", output_stream)
         jobid = match.group(1)
         return int(jobid)
