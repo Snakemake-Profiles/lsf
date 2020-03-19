@@ -4,10 +4,6 @@ from tests.src.lsf_status import LSF_Status_Checker, BjobsError
 from tests.src.OSLayer import OSLayer
 from subprocess import CalledProcessError
 
-count_fail_three_times_and_then_return_DONE=0
-count_fail_three_times_and_then_return_PEND=0
-count_fail_three_times_and_then_return_FAIL=0
-
 def assert_called_n_times_with_same_args(mock, n, args):
     assert mock.call_count == n
     for call in mock.call_args_list:
@@ -113,16 +109,16 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__)
     def test___get_status___bjobs_fails_three_times_but_says_DONE_in_the_fourth___job_status_is_success(self,
                                                                                     run_process_mock):
+        self.count_fail_three_times_and_then_return_DONE = 0
         def fail_three_times_and_then_return_DONE(cmd):
-            global count_fail_three_times_and_then_return_DONE
-            count_fail_three_times_and_then_return_DONE += 1
-            if count_fail_three_times_and_then_return_DONE == 1:
+            self.count_fail_three_times_and_then_return_DONE += 1
+            if self.count_fail_three_times_and_then_return_DONE == 1:
                 raise BjobsError
-            elif count_fail_three_times_and_then_return_DONE == 2:
+            elif self.count_fail_three_times_and_then_return_DONE == 2:
                 raise KeyError
-            elif count_fail_three_times_and_then_return_DONE == 3:
+            elif self.count_fail_three_times_and_then_return_DONE == 3:
                 raise CalledProcessError(1, "bjobs")
-            elif count_fail_three_times_and_then_return_DONE == 4:
+            elif self.count_fail_three_times_and_then_return_DONE == 4:
                 return "DONE", ""
             else:
                 assert False
@@ -139,16 +135,16 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__)
     def test___get_status___bjobs_fails_three_times_but_says_PEND_in_the_fourth___job_status_is_running(self,
                                                                                     run_process_mock):
+        self.count_fail_three_times_and_then_return_PEND=0
         def fail_three_times_and_then_return_PEND(cmd):
-            global count_fail_three_times_and_then_return_PEND
-            count_fail_three_times_and_then_return_PEND += 1
-            if count_fail_three_times_and_then_return_PEND == 1:
+            self.count_fail_three_times_and_then_return_PEND += 1
+            if self.count_fail_three_times_and_then_return_PEND == 1:
                 raise BjobsError
-            elif count_fail_three_times_and_then_return_PEND == 2:
+            elif self.count_fail_three_times_and_then_return_PEND == 2:
                 raise KeyError
-            elif count_fail_three_times_and_then_return_PEND == 3:
+            elif self.count_fail_three_times_and_then_return_PEND == 3:
                 raise CalledProcessError(1, "bjobs")
-            elif count_fail_three_times_and_then_return_PEND == 4:
+            elif self.count_fail_three_times_and_then_return_PEND == 4:
                 return "PEND", ""
             else:
                 assert False
@@ -163,12 +159,12 @@ class Test_LSF_Status_Checker(unittest.TestCase):
 
     @patch.object(OSLayer, OSLayer.run_process.__name__)
     def test___get_status___bjobs_fails_one_but_says_EXIT_in_the_fourth___job_status_is_failed(self, run_process_mock):
+        self.count_fail_three_times_and_then_return_FAIL=0
         def fail_one_time_and_then_return_FAIL(cmd):
-            global count_fail_three_times_and_then_return_FAIL
-            count_fail_three_times_and_then_return_FAIL += 1
-            if count_fail_three_times_and_then_return_FAIL == 1:
+            self.count_fail_three_times_and_then_return_FAIL += 1
+            if self.count_fail_three_times_and_then_return_FAIL == 1:
                 raise BjobsError
-            elif count_fail_three_times_and_then_return_FAIL == 2:
+            elif self.count_fail_three_times_and_then_return_FAIL == 2:
                 return "EXIT", ""
             else:
                 assert False
