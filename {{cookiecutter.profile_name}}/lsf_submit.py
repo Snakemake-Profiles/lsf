@@ -161,7 +161,7 @@ class LSF_Submit:
         jobid = match.group(1)
         return int(jobid)
 
-    def _get_information_to_status_script(self, external_job_id: int) -> str:
+    def _get_parameters_to_status_script(self, external_job_id: int) -> str:
         return "{external_job_id} {outlog}".format(
             external_job_id=external_job_id,
             outlog=self.outlog
@@ -172,8 +172,8 @@ class LSF_Submit:
         self._remove_previous_logs() # we could be very unlucky of having the same 64-length random string with the same jobid
         try:
             external_job_id = self._submit_cmd_and_get_external_job_id()
-            information_to_status_script = self._get_information_to_status_script(external_job_id)
-            OSLayer.print(information_to_status_script)
+            parameters_to_status_script = self._get_parameters_to_status_script(external_job_id)
+            OSLayer.print(parameters_to_status_script)
         except subprocess.CalledProcessError as error:
             print("bsub invocation error: {error}".format(error=error), file=sys.stderr)
             raise error
