@@ -51,7 +51,7 @@ class LSF_Submit:
         self._jobscript = argv[-1]
         self._cluster_cmd = " ".join(argv[1:-1])
         self._job_properties = read_job_properties(self._jobscript)
-        self.random_string = OSLayer.get_random_alphanumerical_string()
+        self.random_string = OSLayer.get_uuid4_string()
 
     @property
     def jobscript(self) -> str:

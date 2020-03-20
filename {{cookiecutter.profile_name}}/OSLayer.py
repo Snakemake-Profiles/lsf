@@ -1,8 +1,7 @@
 from pathlib import Path
 import subprocess
 from typing import Tuple
-import random
-import string
+import uuid
 
 
 class OSLayer:
@@ -34,5 +33,5 @@ class OSLayer:
         print(string)
 
     @staticmethod
-    def get_random_alphanumerical_string(n : int = 64) -> str:
-        return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(n))
+    def get_uuid4_string() -> str:
+        return str(uuid.uuid4())
