@@ -29,7 +29,6 @@ import subprocess
 from pathlib import Path
 from snakemake.utils import read_job_properties
 
-
 DEFAULT_NAME = "jobname"
 
 
@@ -56,7 +55,7 @@ def get_job_name(job_properties: dict) -> str:
     else:
         wildcards = job_properties.get("wildcards", dict())
         wildcards_str = (
-            ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
+                ".".join("{}={}".format(k, v) for k, v in wildcards.items()) or "unique"
         )
         name = job_properties.get("rule", "") or DEFAULT_NAME
         jobname = cluster.get("jobname", "{0}.{1}".format(name, wildcards_str))
@@ -69,7 +68,7 @@ def generate_jobinfo_command(job_properties: dict) -> str:
     log_dir.mkdir(parents=True, exist_ok=True)
 
     jobname = get_job_name(job_properties)
-   
+
     out_log = log_dir / cluster.get("output", "{}.out".format(jobname))
     out_log_parent = out_log.parent
     out_log_parent.mkdir(parents=True, exist_ok=True)
@@ -104,7 +103,6 @@ submit_cmd = "bsub {resources} {job_info} {queue} {cluster} {jobscript}".format(
     cluster=cluster_cmd,
     jobscript=jobscript,
 )
-
 
 try:
     response = subprocess.run(
