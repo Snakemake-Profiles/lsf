@@ -109,5 +109,5 @@ class LSF_Status_Checker:
 if __name__ == "__main__":
     jobid = int(sys.argv[1])
     outlog = sys.argv[2]
-    lsf_status_checker = LSF_Status_Checker(jobid, outlog)
+    lsf_status_checker = LSF_Status_Checker(jobid, outlog, 0.001, 1)
     print(lsf_status_checker.get_status())
