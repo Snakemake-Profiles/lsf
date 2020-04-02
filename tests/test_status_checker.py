@@ -215,7 +215,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
     @patch.object(
         StatusChecker,
-        StatusChecker._get_lines_of_log_file.__name__,
+        StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Successfully completed.", "", "Resource usage summary:"],
     )
     def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_success(
@@ -235,7 +235,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
     @patch.object(
         StatusChecker,
-        StatusChecker._get_lines_of_log_file.__name__,
+        StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Exited with exit code 1.", "", "Resource usage summary:"],
     )
     def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_failed(
@@ -255,7 +255,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
     @patch.object(
         StatusChecker,
-        StatusChecker._get_lines_of_log_file.__name__,
+        StatusChecker._get_tail_of_log_file.__name__,
         side_effect=FileNotFoundError,
     )
     def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_does_not_yet_exists___job_status_is_running(
@@ -275,7 +275,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
     @patch.object(
         StatusChecker,
-        StatusChecker._get_lines_of_log_file.__name__,
+        StatusChecker._get_tail_of_log_file.__name__,
         return_value=["...", "..."],
     )
     def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_exit_info_not_yet_written___job_status_is_running(
@@ -295,7 +295,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
     @patch.object(
         StatusChecker,
-        StatusChecker._get_lines_of_log_file.__name__,
+        StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Successfully completed.", ""],
     )
     def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_resource_line_does_not_exist___job_status_is_running(
@@ -332,11 +332,11 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         self.assertRaises(KeyError, lsf_status_checker._query_status_using_bjobs)
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
-    def test____get_lines_of_log_file(self):
+    def test____get_tail_of_log_file(self):
         lsf_status_checker = StatusChecker(
             123, "test_file.txt", wait_between_tries=0.001, max_status_checks=4
         )
-        actual = lsf_status_checker._get_lines_of_log_file()
+        actual = lsf_status_checker._get_tail_of_log_file()
         expected = ["abcd", "1234"]
         self.assertEqual(actual, expected)
 

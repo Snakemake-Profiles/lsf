@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import time
-from typing import List
-from subprocess import CalledProcessError
 import sys
+import time
 from pathlib import Path
+from subprocess import CalledProcessError
+from typing import List
 
 if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
@@ -14,6 +14,10 @@ else:
 
 
 class BjobsError(Exception):
+    pass
+
+
+class UnknownStatusLine(Exception):
     pass
 
 
@@ -72,26 +76,25 @@ class StatusChecker:
 
         return self.STATUS_TABLE[output_stream]
 
-    def _get_lines_of_log_file(self) -> List[str]:
-        with open(self.outlog) as out_log_filehandler:
-            lines = [line.strip() for line in out_log_filehandler.readlines()]
-        return lines
+    def _get_tail_of_log_file(self) -> List[str]:
+        # 30 lines gives us the whole LSF completion summary
+        tail = OSLayer.tail(self.outlog, num_lines=30)
+        return [line.decode().strip() for line in tail]
 
     def _query_status_using_log(self) -> str:
         try:
-            log_lines = self._get_lines_of_log_file()
-            resource_summary_usage_line_index = log_lines.index(
+            log_tail = self._get_tail_of_log_file()
+            resource_summary_usage_line_index = log_tail.index(
                 "Resource usage summary:"
             )
-            status_line = log_lines[resource_summary_usage_line_index - 2]
-            assert (
-                status_line.startswith("Exited with exit code")
-                or status_line == "Successfully completed."
-            )
+            status_line = log_tail[resource_summary_usage_line_index - 2]
+
             if status_line == "Successfully completed.":
                 return self.SUCCESS
-            else:
+            elif status_line.startswith("Exited with exit code"):
                 return self.FAILED
+            else:
+                raise UnknownStatusLine(status_line)
         except (FileNotFoundError, ValueError):
             return self.RUNNING
 
