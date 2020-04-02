@@ -17,7 +17,7 @@ class BjobsError(Exception):
     pass
 
 
-class LSF_Status_Checker:
+class StatusChecker:
     SUCCESS = "success"
     RUNNING = "running"
     FAILED = "failed"
@@ -143,5 +143,5 @@ class LSF_Status_Checker:
 if __name__ == "__main__":
     jobid = int(sys.argv[1])
     outlog = sys.argv[2]
-    lsf_status_checker = LSF_Status_Checker(jobid, outlog)
+    lsf_status_checker = StatusChecker(jobid, outlog)
     print(lsf_status_checker.get_status())
