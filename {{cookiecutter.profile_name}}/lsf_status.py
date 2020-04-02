@@ -39,8 +39,8 @@ class LSF_Status_Checker:
         self,
         jobid: int,
         outlog: str,
-        wait_between_tries: float = 5,
-        max_status_checks: int = 3,
+        wait_between_tries: float = 0.001,
+        max_status_checks: int = 1,
     ):
         self._jobid = jobid
         self._outlog = outlog
@@ -143,5 +143,5 @@ class LSF_Status_Checker:
 if __name__ == "__main__":
     jobid = int(sys.argv[1])
     outlog = sys.argv[2]
-    lsf_status_checker = LSF_Status_Checker(jobid, outlog, 0.001, 1)
+    lsf_status_checker = LSF_Status_Checker(jobid, outlog)
     print(lsf_status_checker.get_status())
