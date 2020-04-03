@@ -47,6 +47,9 @@ class OSLayer:
 
     @staticmethod
     def tail(path: str, num_lines: int = 10) -> List[bytes]:
+        if not Path(path).exists():
+            raise FileNotFoundError("{} does not exist.".format(path))
+
         completed_process = subprocess.Popen(
             ["tail", "-n", str(num_lines), path],
             stdout=subprocess.PIPE,
