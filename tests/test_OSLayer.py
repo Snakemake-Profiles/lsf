@@ -15,10 +15,17 @@ class TestTail:
 
     def test_nonExistentFile_raisesError(self):
         path = "foo.bar"
-        with pytest.raises(TailError) as err:
+        with pytest.raises(FileNotFoundError) as err:
             OSLayer.tail(path)
 
         assert err.match("No such file")
+
+    def test_numLinesIsNotInt_raisesError(self, tmpdir):
+        path = str(tmpdir)
+        with pytest.raises(TailError) as err:
+            OSLayer.tail(path, num_lines=3.3)
+
+        assert err.match("illegal offset")
 
     def test_oneLineInFile_returnsLine(self, tmpdir):
         content = "one line\n"
