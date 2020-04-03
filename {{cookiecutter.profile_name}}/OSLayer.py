@@ -55,7 +55,6 @@ class OSLayer:
         lines = completed_process.stdout.readlines()
         exit_code = completed_process.poll()
         if exit_code != 0:
-            print(completed_process.returncode)
             raise TailError(
                 "Failed to execute the tail command on the file {} due to the "
                 "following error:\n{}".format(
