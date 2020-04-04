@@ -80,8 +80,8 @@ class LSF_Submit:
     @property
     def resources_cmd(self) -> str:
         return (
-            "-M {mem_mb} -n {threads} "
-            "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}] span[hosts=1]'"
+            "-M {mem_mb}MB -n {threads} "
+            "-R 'select[mem>{mem_mb}MB] rusage[mem={mem_mb}MB] span[hosts=1]'"
         ).format(mem_mb=self.mem_mb, threads=self.threads)
 
     @property
