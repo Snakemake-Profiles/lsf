@@ -50,18 +50,17 @@ class OSLayer:
         if not Path(path).exists():
             raise FileNotFoundError("{} does not exist.".format(path))
 
-        completed_process = subprocess.Popen(
+        process = subprocess.Popen(
             ["tail", "-n", str(num_lines), path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        lines = completed_process.stdout.readlines()
-        exit_code = completed_process.poll()
+        exit_code = process.wait()
         if exit_code != 0:
             raise TailError(
                 "Failed to execute the tail command on the file {} due to the "
                 "following error:\n{}".format(
-                    path, completed_process.stderr.read().decode()
+                    path, process.stderr.read().decode()
                 )
             )
-        return lines
+        return process.stdout.readlines()
