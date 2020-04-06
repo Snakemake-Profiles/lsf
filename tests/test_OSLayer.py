@@ -18,7 +18,7 @@ class TestTail:
         with pytest.raises(FileNotFoundError) as err:
             OSLayer.tail(path)
 
-        assert err.match("No such file")
+        assert err.match("{} does not exist".format(path))
 
     def test_numLinesIsNotInt_raisesError(self, tmpdir):
         path = str(tmpdir)
