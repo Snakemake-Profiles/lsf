@@ -2,6 +2,7 @@ class CookieCutter:
     """
     Cookie Cutter wrapper
     """
+
     @staticmethod
     def get_default_threads() -> int:
         return int("{{cookiecutter.default_threads}}")

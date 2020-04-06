@@ -25,8 +25,6 @@ class TestTail:
         with pytest.raises(TailError) as err:
             OSLayer.tail(path, num_lines=3.3)
 
-        assert err.match("illegal offset")
-
     def test_oneLineInFile_returnsLine(self, tmpdir):
         content = "one line\n"
         path = tmpdir.join("tail.txt")
