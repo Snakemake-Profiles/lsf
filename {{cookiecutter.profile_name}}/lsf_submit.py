@@ -47,7 +47,7 @@ class JobidNotFoundError(Exception):
     pass
 
 
-class LSF_Submit:
+class Submitter:
     def __init__(self, argv: List[str]):
         self._jobscript = argv[-1]
         self._cluster_cmd = " ".join(argv[1:-1])
@@ -205,5 +205,5 @@ class LSF_Submit:
 
 
 if __name__ == "__main__":
-    lsf_submit = LSF_Submit(sys.argv)
+    lsf_submit = Submitter(sys.argv)
     lsf_submit.submit()

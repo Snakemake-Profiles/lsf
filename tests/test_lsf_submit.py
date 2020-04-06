@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch
-from tests.src.lsf_submit import LSF_Submit, BsubInvocationError, JobidNotFoundError
+from tests.src.lsf_submit import Submitter, BsubInvocationError, JobidNotFoundError
 from tests.src.CookieCutter import CookieCutter
 from tests.src.OSLayer import OSLayer
 from pathlib import Path
 from subprocess import CalledProcessError
 
 
-class Test_LSF_Submit(unittest.TestCase):
+class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
     )
@@ -26,7 +26,7 @@ class Test_LSF_Submit(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = LSF_Submit(argv)
+        lsf_submit = Submitter(argv)
         self.assertEqual(lsf_submit.jobscript, "real_jobscript.sh")
         self.assertEqual(
             lsf_submit.cluster_cmd, "cluster_opt_1 cluster_opt_2 cluster_opt_3"
@@ -87,7 +87,7 @@ class Test_LSF_Submit(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = LSF_Submit(argv)
+        lsf_submit = Submitter(argv)
         actual = lsf_submit._submit_cmd_and_get_external_job_id()
         expected = 8697223
         self.assertEqual(actual, expected)
@@ -113,7 +113,7 @@ class Test_LSF_Submit(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = LSF_Submit(argv)
+        lsf_submit = Submitter(argv)
         self.assertRaises(JobidNotFoundError, lsf_submit.submit)
 
     @patch.object(
@@ -152,7 +152,7 @@ class Test_LSF_Submit(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = LSF_Submit(argv)
+        lsf_submit = Submitter(argv)
 
         lsf_submit.submit()
 
@@ -200,7 +200,7 @@ class Test_LSF_Submit(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = LSF_Submit(argv)
+        lsf_submit = Submitter(argv)
 
         self.assertRaises(BsubInvocationError, lsf_submit.submit)
 
