@@ -1,8 +1,11 @@
 import unittest
-from unittest.mock import patch
-from tests.src.lsf_status import StatusChecker, BjobsError
-from tests.src.OSLayer import OSLayer
 from subprocess import CalledProcessError
+from unittest.mock import patch
+
+import pytest
+
+from tests.src.OSLayer import OSLayer
+from tests.src.lsf_status import StatusChecker, BjobsError, UnknownStatusLine
 
 
 def assert_called_n_times_with_same_args(mock, n, args):
@@ -307,6 +310,27 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         actual = lsf_status_checker.get_status()
         expected = "running"
         self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(
+            run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
+        )
+        get_lines_of_log_file_mock.assert_called_once_with()
+
+    @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
+    @patch.object(
+        StatusChecker,
+        StatusChecker._get_tail_of_log_file.__name__,
+        return_value=["I am an unknown status line", "", "Resource usage summary:"],
+    )
+    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_resource_line_is_not_recognised___job_status_is_running(
+        self, get_lines_of_log_file_mock, run_process_mock
+    ):
+        lsf_status_checker = StatusChecker(
+            123, "dummy", wait_between_tries=0.001, max_status_checks=4
+        )
+        with pytest.raises(UnknownStatusLine) as err:
+            lsf_status_checker.get_status()
+
+        assert err.match("I am an unknown status line")
         assert_called_n_times_with_same_args(
             run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
         )

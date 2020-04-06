@@ -59,8 +59,6 @@ class OSLayer:
         if exit_code != 0:
             raise TailError(
                 "Failed to execute the tail command on the file {} due to the "
-                "following error:\n{}".format(
-                    path, process.stderr.read().decode()
-                )
+                "following error:\n{}".format(path, process.stderr.read().decode())
             )
         return process.stdout.readlines()
