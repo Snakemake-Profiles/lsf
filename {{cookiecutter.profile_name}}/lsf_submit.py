@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-"""
-lsf-submit.py
-
-Script to wrap bsub sync command for Snakemake. Uses the following job or
-cluster parameters:
-
-+ `threads`
-+ `resources`
-    - `mem_mb`: Expected memory requirements in megabytes. Overrides
-      cluster.mem_mb
-+ `cluster`
-    - `mem_mb`: Memory that will be requested for the cluster for the job.
-      Overriden by resources.mem_mb, if present.
-      `resources`
-    - `queue`: Which queue to run job on
-    - `logdir`: Where to log stdout/stderr from cluster command
-    - `output`: Name of stdout logfile
-    - `error`: Name of stderr logfile
-    - `jobname`: Job name (with wildcards)
-
-Author: Michael B Hall
-Adapted from: https://github.com/jaicher/snakemake-sync-bq-sub
-"""
-
 import sys
 import subprocess
 from pathlib import Path
