@@ -1,10 +1,16 @@
 import unittest
-from unittest.mock import patch
-from tests.src.lsf_submit import Submitter, BsubInvocationError, JobidNotFoundError
-from tests.src.CookieCutter import CookieCutter
-from tests.src.OSLayer import OSLayer
 from pathlib import Path
 from subprocess import CalledProcessError
+from unittest.mock import patch
+
+from tests.src.CookieCutter import CookieCutter
+from tests.src.OSLayer import OSLayer
+from tests.src.lsf_submit import (
+    Submitter,
+    BsubInvocationError,
+    JobidNotFoundError,
+    MemoryUnits,
+)
 
 
 class TestSubmitter(unittest.TestCase):
@@ -26,7 +32,8 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = Submitter(argv)
+        memory_units = MemoryUnits.GB
+        lsf_submit = Submitter(argv, memory_units=memory_units)
         self.assertEqual(lsf_submit.jobscript, "real_jobscript.sh")
         self.assertEqual(
             lsf_submit.cluster_cmd, "cluster_opt_1 cluster_opt_2 cluster_opt_3"
@@ -37,9 +44,12 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.wildcards_str, "i=0")
         self.assertEqual(lsf_submit.rule_name, "search_fasta_on_index")
         self.assertEqual(lsf_submit.is_group_jobtype, False)
+        expected_mem = "2662GB"
         self.assertEqual(
             lsf_submit.resources_cmd,
-            "-M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]'",
+            "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'".format(
+                mem=expected_mem
+            ),
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         self.assertEqual(lsf_submit.logdir, Path("logdir"))
@@ -52,11 +62,11 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
         self.assertEqual(
             lsf_submit.submit_cmd,
-            "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh",
+            "real_jobscript.sh".format(mem=expected_mem),
         )
 
     @patch.object(
@@ -152,7 +162,8 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = Submitter(argv)
+        mem_units = MemoryUnits.MB
+        lsf_submit = Submitter(argv, memory_units=mem_units)
 
         lsf_submit.submit()
 
@@ -160,12 +171,13 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
+        expected_mem = "2662{}".format(mem_units.value)
         run_process_mock.assert_called_once_with(
-            "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh"
+            "real_jobscript.sh".format(mem=expected_mem)
         )
         print_mock.assert_called_once_with("123456 logdir/2_random.out")
 
@@ -208,12 +220,13 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
         remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
+        expected_mem = "2662KB"
         run_process_mock.assert_called_once_with(
-            "bsub -M 2662 -n 1 -R 'select[mem>2662] rusage[mem=2662] span[hosts=1]' "
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
             "-q q1 "
             "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh"
+            "real_jobscript.sh".format(mem=expected_mem)
         )
         print_mock.assert_not_called()
 

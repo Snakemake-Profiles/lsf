@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import sys
-import subprocess
-from pathlib import Path
-from snakemake.utils import read_job_properties
-from typing import List
 import re
+import subprocess
+import sys
+from enum import Enum
+from pathlib import Path
+from typing import List
+
+from snakemake.utils import read_job_properties
 
 if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
@@ -23,12 +25,27 @@ class JobidNotFoundError(Exception):
     pass
 
 
+class MemoryUnits(Enum):
+    """See https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_command_ref/bsub.__r.1.html
+    for valid units.
+    """
+
+    KB = "KB"
+    MB = "MB"
+    GB = "GB"
+    TB = "TB"
+    PB = "PB"
+    EB = "EB"
+    ZB = "ZB"
+
+
 class Submitter:
-    def __init__(self, argv: List[str]):
+    def __init__(self, argv: List[str], memory_units: MemoryUnits = MemoryUnits.KB):
         self._jobscript = argv[-1]
         self._cluster_cmd = " ".join(argv[1:-1])
         self._job_properties = read_job_properties(self._jobscript)
         self.random_string = OSLayer.get_uuid4_string()
+        self._memory_units = memory_units
 
     @property
     def jobscript(self) -> str:
@@ -57,11 +74,15 @@ class Submitter:
         )
 
     @property
+    def memory_units(self) -> str:
+        return self._memory_units.value
+
+    @property
     def resources_cmd(self) -> str:
         return (
-            "-M {mem_mb} -n {threads} "
-            "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}] span[hosts=1]'"
-        ).format(mem_mb=self.mem_mb, threads=self.threads)
+            "-M {mem_mb}{units} -n {threads} "
+            "-R 'select[mem>{mem_mb}{units}] rusage[mem={mem_mb}{units}] span[hosts=1]'"
+        ).format(mem_mb=self.mem_mb, threads=self.threads, units=self.memory_units)
 
     @property
     def wildcards(self) -> dict:
@@ -181,5 +202,6 @@ class Submitter:
 
 
 if __name__ == "__main__":
-    lsf_submit = Submitter(sys.argv)
+    memory_units = MemoryUnits.MB
+    lsf_submit = Submitter(sys.argv, memory_units=memory_units)
     lsf_submit.submit()
