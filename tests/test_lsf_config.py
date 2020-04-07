@@ -2,6 +2,18 @@ from io import StringIO
 from tests.src.lsf_config import Config
 
 
+class TestBool:
+    def test_empty_returns_false(self):
+        config = Config({})
+
+        assert not config
+
+    def test_non_empty_returns_true(self):
+        config = Config({1: 1})
+
+        assert config
+
+
 class TestContains:
     def test_item_not_in_config(self):
         stream = StringIO("key: 'foo'")
@@ -143,7 +155,9 @@ class TestParamsForRule:
         assert actual == expected
 
     def test_rule_and_default_present_returns_default_and_rule_params(self):
-        stream = StringIO("__default__: '-q foo'\nrule:\n  - '-P project'\n  - '-q bar'")
+        stream = StringIO(
+            "__default__: '-q foo'\nrule:\n  - '-P project'\n  - '-q bar'"
+        )
         config = Config.from_stream(stream)
         rulename = "rule"
 
