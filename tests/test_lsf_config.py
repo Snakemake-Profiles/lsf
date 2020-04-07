@@ -14,6 +14,13 @@ class TestBool:
         assert config
 
 
+class TestDefaultConstructor:
+    def test_no_options_given_returns_empty(self):
+        config = Config()
+
+        assert not config
+
+
 class TestContains:
     def test_item_not_in_config(self):
         stream = StringIO("key: 'foo'")

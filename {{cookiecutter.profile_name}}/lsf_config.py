@@ -4,7 +4,9 @@ import yaml
 
 
 class Config:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict = None):
+        if data is None:
+            data = dict()
         self._data = data
 
     def __bool__(self) -> bool:
