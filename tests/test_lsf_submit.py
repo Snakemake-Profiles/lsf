@@ -1,4 +1,5 @@
 import unittest
+from io import StringIO
 from pathlib import Path
 from subprocess import CalledProcessError
 from unittest.mock import patch
@@ -11,6 +12,7 @@ from tests.src.lsf_submit import (
     JobidNotFoundError,
     MemoryUnits,
 )
+from tests.src.lsf_config import Config
 
 
 class TestSubmitter(unittest.TestCase):
@@ -267,6 +269,52 @@ class TestSubmitter(unittest.TestCase):
         expected = "-q queue"
 
         self.assertEqual(actual, expected)
+
+    @patch.object(
+        CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
+    )
+    @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
+    def test_rule_specific_params_are_submitted(self, *mocks):
+        argv = [
+            "script_name",
+            "cluster_opt_1",
+            "cluster_opt_2",
+            "cluster_opt_3",
+            "real_jobscript.sh",
+        ]
+        stream = StringIO(
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        )
+        lsf_config = Config.from_stream(stream)
+        memory_units = MemoryUnits.GB
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(
+            jobscript=jobscript,
+            cluster_cmds=cluster_cmds,
+            memory_units=memory_units,
+            lsf_config=lsf_config,
+        )
+
+        actual = lsf_submit.submit_cmd
+        print(actual)
+        expected_mem = "2662{}".format(memory_units.value)
+        expected = (
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
+            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
+            "-q q1 "
+            "cluster_opt_1 cluster_opt_2 cluster_opt_3 -q queue -gpu - -P project "
+            "real_jobscript.sh".format(mem=expected_mem)
+        )
+        print(expected)
+
+        assert actual == expected
 
 
 if __name__ == "__main__":
