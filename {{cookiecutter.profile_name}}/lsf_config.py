@@ -7,6 +7,9 @@ class Config:
     def __init__(self, data: dict):
         self._data = data
 
+    def __bool__(self) -> bool:
+        return bool(self._data)
+
     def __contains__(self, item) -> bool:
         return item in self._data
 
