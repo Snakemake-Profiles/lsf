@@ -170,19 +170,26 @@ class Submitter:
     def queue_cmd(self) -> str:
         return "-q {}".format(self.queue) if self.queue else ""
 
+    def rule_specific_params(self, rulename: str) -> str:
+        return self.lsf_config.params_for_rule(rulename)
+
     @property
     def cluster_cmd(self) -> str:
         return self._cluster_cmd
 
     @property
     def submit_cmd(self) -> str:
-        return "bsub {resources} {job_info} {queue} {cluster} {jobscript}".format(
-            resources=self.resources_cmd,
-            job_info=self.jobinfo_cmd,
-            queue=self.queue_cmd,
-            cluster=self.cluster_cmd,
-            jobscript=self.jobscript,
-        )
+        rule_specific_params = self.rule_specific_params(self.rule_name)
+        params = [
+            "bsub",
+            self.resources_cmd,
+            self.jobinfo_cmd,
+            self.queue_cmd,
+            self.cluster_cmd,
+            rule_specific_params,
+            self.jobscript,
+        ]
+        return " ".join(p for p in params if p)
 
     def _create_logdir(self):
         OSLayer.mkdir(self.logdir)
