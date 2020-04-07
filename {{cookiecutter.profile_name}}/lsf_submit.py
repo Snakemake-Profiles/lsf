@@ -148,7 +148,7 @@ class Submitter:
 
     @property
     def queue(self) -> str:
-        return self.cluster.get("queue", "")
+        return self.cluster.get("queue", CookieCutter.get_default_queue())
 
     @property
     def queue_cmd(self) -> str:

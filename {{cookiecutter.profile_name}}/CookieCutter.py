@@ -14,3 +14,7 @@ class CookieCutter:
     @staticmethod
     def get_log_dir() -> str:
         return "{{cookiecutter.default_cluster_logdir}}"
+
+    @staticmethod
+    def get_default_queue() -> str:
+        return "{{cookiecutter.default.queue}}"
