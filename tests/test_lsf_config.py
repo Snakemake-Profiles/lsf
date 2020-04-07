@@ -120,3 +120,44 @@ class TestDefaultParams:
 
         assert actual == expected
 
+
+class TestParamsForRule:
+    def test_no_default_or_rule_returns_empty(self):
+        stream = StringIO("key: 'foo'")
+        config = Config.from_stream(stream)
+        rulename = "a"
+
+        actual = config.params_for_rule(rulename)
+        expected = ""
+
+        assert actual == expected
+
+    def test_default_present_but_not_rule_returns_default_params(self):
+        stream = StringIO("__default__: '-q foo'")
+        config = Config.from_stream(stream)
+        rulename = "a"
+
+        actual = config.params_for_rule(rulename)
+        expected = "-q foo"
+
+        assert actual == expected
+
+    def test_rule_and_default_present_returns_default_and_rule_params(self):
+        stream = StringIO("__default__: '-q foo'\nrule:\n  - '-P project'\n  - '-q bar'")
+        config = Config.from_stream(stream)
+        rulename = "rule"
+
+        actual = config.params_for_rule(rulename)
+        expected = "-q foo -P project -q bar"
+
+        assert actual == expected
+
+    def test_rule_present_but_not_default_returns_rule_params(self):
+        stream = StringIO("rule:\n  - '-P project'\n  - '-q bar'")
+        config = Config.from_stream(stream)
+        rulename = "rule"
+
+        actual = config.params_for_rule(rulename)
+        expected = "-P project -q bar"
+
+        assert actual == expected

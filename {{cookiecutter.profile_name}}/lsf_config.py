@@ -23,7 +23,9 @@ class Config:
         return self.concatenate_params(self.get("__default__", ""))
 
     def params_for_rule(self, rulename: str) -> str:
-        pass
+        default_params = self.default_params()
+        rule_params = self.concatenate_params(self.get(rulename, ""))
+        return " ".join(params for params in [default_params, rule_params] if params)
 
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":
