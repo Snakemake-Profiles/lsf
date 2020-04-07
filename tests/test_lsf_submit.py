@@ -33,7 +33,11 @@ class TestSubmitter(unittest.TestCase):
             "real_jobscript.sh",
         ]
         memory_units = MemoryUnits.GB
-        lsf_submit = Submitter(argv, memory_units=memory_units)
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(
+            jobscript=jobscript, cluster_cmds=cluster_cmds, memory_units=memory_units
+        )
         self.assertEqual(lsf_submit.jobscript, "real_jobscript.sh")
         self.assertEqual(
             lsf_submit.cluster_cmd, "cluster_opt_1 cluster_opt_2 cluster_opt_3"
@@ -97,7 +101,9 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = Submitter(argv)
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(jobscript=jobscript, cluster_cmds=cluster_cmds)
         actual = lsf_submit._submit_cmd_and_get_external_job_id()
         expected = 8697223
         self.assertEqual(actual, expected)
@@ -123,7 +129,9 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = Submitter(argv)
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(jobscript=jobscript, cluster_cmds=cluster_cmds)
         self.assertRaises(JobidNotFoundError, lsf_submit.submit)
 
     @patch.object(
@@ -163,7 +171,11 @@ class TestSubmitter(unittest.TestCase):
             "real_jobscript.sh",
         ]
         mem_units = MemoryUnits.MB
-        lsf_submit = Submitter(argv, memory_units=mem_units)
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(
+            jobscript=jobscript, cluster_cmds=cluster_cmds, memory_units=mem_units
+        )
 
         lsf_submit.submit()
 
@@ -212,7 +224,9 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        lsf_submit = Submitter(argv)
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(jobscript=jobscript, cluster_cmds=cluster_cmds)
 
         self.assertRaises(BsubInvocationError, lsf_submit.submit)
 

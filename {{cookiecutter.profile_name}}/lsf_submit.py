@@ -4,7 +4,7 @@ import subprocess
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Union, Optional
 
 from snakemake.utils import read_job_properties
 
@@ -12,9 +12,13 @@ if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
     from OSLayer import OSLayer
     from CookieCutter import CookieCutter
+    from lsf_config import Config
 else:
     from .OSLayer import OSLayer
     from .CookieCutter import CookieCutter
+    from .lsf_config import Config
+
+PathLike = Union[str, Path]
 
 
 class BsubInvocationError(Exception):
@@ -40,12 +44,24 @@ class MemoryUnits(Enum):
 
 
 class Submitter:
-    def __init__(self, argv: List[str], memory_units: MemoryUnits = MemoryUnits.KB):
-        self._jobscript = argv[-1]
-        self._cluster_cmd = " ".join(argv[1:-1])
+    def __init__(
+        self,
+        jobscript: PathLike,
+        cluster_cmds: List[str] = None,
+        memory_units: MemoryUnits = MemoryUnits.KB,
+        lsf_config: Optional[Config] = None,
+    ):
+        if cluster_cmds is None:
+            cluster_cmds = []
+        if lsf_config is None:
+            lsf_config = Config()
+
+        self._jobscript = jobscript
+        self._cluster_cmd = " ".join(cluster_cmds)
         self._job_properties = read_job_properties(self._jobscript)
         self.random_string = OSLayer.get_uuid4_string()
         self._memory_units = memory_units
+        self.lsf_config = lsf_config
 
     @property
     def jobscript(self) -> str:
@@ -202,6 +218,21 @@ class Submitter:
 
 
 if __name__ == "__main__":
+    workdir = Path().resolve()
+    config_file = workdir / "lsf.yaml"
+    if config_file.exists():
+        with config_file.open() as stream:
+            lsf_config = Config.from_stream(stream)
+    else:
+        lsf_config = Config()
+
+    jobscript = sys.argv[-1]
+    cluster_cmds = sys.argv[1:-1]
     memory_units = MemoryUnits.MB
-    lsf_submit = Submitter(sys.argv, memory_units=memory_units)
+    lsf_submit = Submitter(
+        jobscript=jobscript,
+        memory_units=memory_units,
+        lsf_config=lsf_config,
+        cluster_cmds=cluster_cmds,
+    )
     lsf_submit.submit()
