@@ -244,6 +244,30 @@ class TestSubmitter(unittest.TestCase):
         )
         print_mock.assert_not_called()
 
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_queue.__name__, return_value="queue"
+    )
+    def test_get_queue_cmd_returns_cookiecutter_default_if_no_cluster_config(
+        self, *mock
+    ):
+        argv = [
+            "script_name",
+            "cluster_opt_1",
+            "cluster_opt_2",
+            "cluster_opt_3",
+            "real_jobscript.sh",
+        ]
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(jobscript=jobscript, cluster_cmds=cluster_cmds)
+        # sorry, this is hacky but I couldn't figure out how to mock read_job_properties
+        del lsf_submit._job_properties["cluster"]
+
+        actual = lsf_submit.queue_cmd
+        expected = "-q queue"
+
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
