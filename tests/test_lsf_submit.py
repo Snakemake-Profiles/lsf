@@ -47,8 +47,10 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.threads, 1)
         self.assertEqual(lsf_submit.mem_mb, 2662)
         self.assertEqual(lsf_submit.jobid, 2)
-        self.assertEqual(lsf_submit.wildcards_str, "i=0")
-        self.assertEqual(lsf_submit.rule_name, "search_fasta_on_index")
+        expected_wildcards_str = "i=0"
+        self.assertEqual(lsf_submit.wildcards_str, expected_wildcards_str)
+        expected_rule_name = "search_fasta_on_index"
+        self.assertEqual(lsf_submit.rule_name, expected_rule_name)
         self.assertEqual(lsf_submit.is_group_jobtype, False)
         expected_mem = "2662GB"
         self.assertEqual(
@@ -58,14 +60,11 @@ class TestSubmitter(unittest.TestCase):
             ),
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
-        self.assertEqual(lsf_submit.logdir, Path("logdir"))
-        expected_outlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
-        )
+        expected_logdir = Path("logdir") / expected_rule_name / expected_wildcards_str
+        self.assertEqual(lsf_submit.logdir, expected_logdir)
+        expected_outlog = expected_logdir / "jobid2_random.out"
         self.assertEqual(lsf_submit.outlog, expected_outlog)
-        expected_errlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
-        )
+        expected_errlog = expected_logdir / "jobid2_random.err"
         self.assertEqual(lsf_submit.errlog, expected_errlog)
         expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
             outlog=expected_outlog, errlog=expected_errlog
@@ -187,14 +186,13 @@ class TestSubmitter(unittest.TestCase):
 
         lsf_submit.submit()
 
-        mkdir_mock.assert_called_once_with(Path("logdir"))
+        expected_logdir = (
+                Path("logdir") / lsf_submit.rule_name / lsf_submit.wildcards_str
+        )
+        mkdir_mock.assert_called_once_with(expected_logdir)
         self.assertEqual(remove_file_mock.call_count, 2)
-        expected_outlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
-        )
-        expected_errlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
-        )
+        expected_outlog = expected_logdir / "jobid2_random.out"
+        expected_errlog = expected_logdir / "jobid2_random.err"
         expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
             outlog=expected_outlog, errlog=expected_errlog
         )
@@ -247,14 +245,13 @@ class TestSubmitter(unittest.TestCase):
 
         self.assertRaises(BsubInvocationError, lsf_submit.submit)
 
-        mkdir_mock.assert_called_once_with(Path("logdir"))
+        expected_logdir = (
+            Path("logdir") / lsf_submit.rule_name / lsf_submit.wildcards_str
+        )
+        mkdir_mock.assert_called_once_with(expected_logdir)
         self.assertEqual(remove_file_mock.call_count, 2)
-        expected_outlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
-        )
-        expected_errlog = (
-            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
-        )
+        expected_outlog = expected_logdir / "jobid2_random.out"
+        expected_errlog = expected_logdir / "jobid2_random.err"
         expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
             outlog=expected_outlog, errlog=expected_errlog
         )
