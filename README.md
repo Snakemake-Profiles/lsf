@@ -14,6 +14,7 @@
   - [Standard rule-specific cluster resource settings](#standard-rule-specific-cluster-resource-settings)
   - [Non-standard rule-specific cluster resource settings](#non-standard-rule-specific-cluster-resource-settings)
 - [Known Issues](#known-issues)
+- [Contributing](#contributing)
 
 
 ## Install
