@@ -146,14 +146,24 @@ class Submitter:
 
     @property
     def outlog(self) -> Path:
-        return self.logdir / "{jobid}_{random_string}.out".format(
-            jobid=self.jobid, random_string=self.random_string
+        return (
+            self.logdir
+            / self.rule_name
+            / self.wildcards_str
+            / "jobid{jobid}_{random_string}.out".format(
+                jobid=self.jobid, random_string=self.random_string
+            )
         )
 
     @property
     def errlog(self) -> Path:
-        return self.logdir / "{jobid}_{random_string}.err".format(
-            jobid=self.jobid, random_string=self.random_string
+        return (
+            self.logdir
+            / self.rule_name
+            / self.wildcards_str
+            / "jobid{jobid}_{random_string}.err".format(
+                jobid=self.jobid, random_string=self.random_string
+            )
         )
 
     @property
