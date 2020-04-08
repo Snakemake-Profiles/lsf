@@ -142,28 +142,19 @@ class Submitter:
 
     @property
     def logdir(self) -> Path:
-        return Path(self.cluster.get("logdir", CookieCutter.get_log_dir()))
+        project_logdir = Path(self.cluster.get("logdir", CookieCutter.get_log_dir()))
+        return project_logdir / self.rule_name / self.wildcards_str
 
     @property
     def outlog(self) -> Path:
-        return (
-            self.logdir
-            / self.rule_name
-            / self.wildcards_str
-            / "jobid{jobid}_{random_string}.out".format(
-                jobid=self.jobid, random_string=self.random_string
-            )
+        return self.logdir / "jobid{jobid}_{random_string}.out".format(
+            jobid=self.jobid, random_string=self.random_string
         )
 
     @property
     def errlog(self) -> Path:
-        return (
-            self.logdir
-            / self.rule_name
-            / self.wildcards_str
-            / "jobid{jobid}_{random_string}.err".format(
-                jobid=self.jobid, random_string=self.random_string
-            )
+        return self.logdir / "jobid{jobid}_{random_string}.err".format(
+            jobid=self.jobid, random_string=self.random_string
         )
 
     @property
