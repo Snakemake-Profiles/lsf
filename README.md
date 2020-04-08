@@ -1,5 +1,7 @@
 # Snakemake LSF profile
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 [Snakemake profile][profile] for running jobs on an [LSF][lsf] cluster.
 
 [TOC]: #
@@ -333,6 +335,10 @@ see if this helps.
 Please raise an issue if you experience this, and the log file check doesn't seem to
 work.
 
+## Contributing
+
+Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 <!--Link References-->
 
 [leandro]: https://github.com/leoisl
@@ -352,4 +358,4 @@ work.
 [config-deprecate]: https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#cluster-configuration-deprecated
 [yaml-collections]: https://yaml.org/spec/1.2/spec.html#id2759963
 [status-checker]: https://github.com/Snakemake-Profiles/snakemake-lsf/blob/master/%7B%7Bcookiecutter.profile_name%7D%7D/lsf_status.py
-
+[contributing]:
