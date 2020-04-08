@@ -59,20 +59,26 @@ class TestSubmitter(unittest.TestCase):
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         self.assertEqual(lsf_submit.logdir, Path("logdir"))
-        self.assertEqual(lsf_submit.outlog, Path("logdir") / "2_random.out")
-        self.assertEqual(lsf_submit.errlog, Path("logdir") / "2_random.err")
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        self.assertEqual(lsf_submit.outlog, expected_outlog)
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        self.assertEqual(lsf_submit.errlog, expected_errlog)
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
         self.assertEqual(
-            lsf_submit.jobinfo_cmd,
-            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0"',
+            lsf_submit.jobinfo_cmd, expected_jobinfo_cmd,
         )
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
         self.assertEqual(
             lsf_submit.submit_cmd,
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
-            "-q q1 "
-            "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh".format(mem=expected_mem),
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd),
         )
 
     @patch.object(
@@ -183,17 +189,26 @@ class TestSubmitter(unittest.TestCase):
 
         mkdir_mock.assert_called_once_with(Path("logdir"))
         self.assertEqual(remove_file_mock.call_count, 2)
-        remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
-        remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
+        remove_file_mock.assert_any_call(expected_outlog)
+        remove_file_mock.assert_any_call(expected_errlog)
         expected_mem = "2662{}".format(mem_units.value)
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
-            "-q q1 "
-            "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh".format(mem=expected_mem)
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
-        print_mock.assert_called_once_with("123456 logdir/2_random.out")
+        print_mock.assert_called_once_with(
+            "123456 {outlog}".format(outlog=expected_outlog)
+        )
 
     @patch.object(
         CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
@@ -234,15 +249,22 @@ class TestSubmitter(unittest.TestCase):
 
         mkdir_mock.assert_called_once_with(Path("logdir"))
         self.assertEqual(remove_file_mock.call_count, 2)
-        remove_file_mock.assert_any_call(Path("logdir/2_random.out"))
-        remove_file_mock.assert_any_call(Path("logdir/2_random.err"))
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
+        remove_file_mock.assert_any_call(expected_outlog)
+        remove_file_mock.assert_any_call(expected_errlog)
         expected_mem = "2662KB"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
-            "-q q1 "
-            "cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "real_jobscript.sh".format(mem=expected_mem)
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print_mock.assert_not_called()
 
@@ -305,12 +327,20 @@ class TestSubmitter(unittest.TestCase):
         actual = lsf_submit.submit_cmd
         print(actual)
         expected_mem = "2662{}".format(memory_units.value)
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            '-o "logdir/2_random.out" -e "logdir/2_random.err" -J "search_fasta_on_index.i=0" '
-            "-q q1 "
-            "cluster_opt_1 cluster_opt_2 cluster_opt_3 -q queue -gpu - -P project "
-            "real_jobscript.sh".format(mem=expected_mem)
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "-q queue -gpu - -P project "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print(expected)
 
