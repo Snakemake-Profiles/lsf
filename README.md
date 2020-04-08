@@ -358,4 +358,3 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 [config-deprecate]: https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#cluster-configuration-deprecated
 [yaml-collections]: https://yaml.org/spec/1.2/spec.html#id2759963
 [status-checker]: https://github.com/Snakemake-Profiles/snakemake-lsf/blob/master/%7B%7Bcookiecutter.profile_name%7D%7D/lsf_status.py
-[contributing]:
