@@ -22,7 +22,7 @@ class Config:
     def concatenate_params(params: Union[List[str], str]) -> str:
         if isinstance(params, str):
             return params
-        return " ".join(params)
+        return " ".join(filter(None, params))
 
     def default_params(self) -> str:
         return self.concatenate_params(self.get("__default__", ""))
@@ -30,7 +30,7 @@ class Config:
     def params_for_rule(self, rulename: str) -> str:
         default_params = self.default_params()
         rule_params = self.concatenate_params(self.get(rulename, ""))
-        return " ".join(params for params in [default_params, rule_params] if params)
+        return self.concatenate_params([default_params, rule_params])
 
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":
