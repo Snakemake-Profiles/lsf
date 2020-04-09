@@ -35,4 +35,4 @@ class Config:
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":
         data = yaml.safe_load(stream)
-        return Config(data) if data is not None else dict()
+        return Config(data)
