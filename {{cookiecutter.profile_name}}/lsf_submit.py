@@ -171,8 +171,9 @@ class Submitter:
     def queue_cmd(self) -> str:
         return "-q {}".format(self.queue) if self.queue else ""
 
-    def rule_specific_params(self, rulename: str) -> str:
-        return self.lsf_config.params_for_rule(rulename)
+    @property
+    def rule_specific_params(self) -> str:
+        return self.lsf_config.params_for_rule(self.rule_name)
 
     @property
     def cluster_cmd(self) -> str:
@@ -180,14 +181,13 @@ class Submitter:
 
     @property
     def submit_cmd(self) -> str:
-        rule_specific_params = self.rule_specific_params(self.rule_name)
         params = [
             "bsub",
             self.resources_cmd,
             self.jobinfo_cmd,
             self.queue_cmd,
             self.cluster_cmd,
-            rule_specific_params,
+            self.rule_specific_params,
             self.jobscript,
         ]
         return " ".join(p for p in params if p)
