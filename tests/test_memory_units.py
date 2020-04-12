@@ -1,6 +1,12 @@
 import pytest
 
-from tests.src.memory_units import Unit, InvalidSuffix, InvalidPower, Memory, InvalidMemoryString
+from tests.src.memory_units import (
+    Unit,
+    InvalidSuffix,
+    InvalidPower,
+    Memory,
+    InvalidMemoryString,
+)
 
 
 class TestUnitFromSuffix:
