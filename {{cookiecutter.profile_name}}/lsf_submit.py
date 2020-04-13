@@ -85,11 +85,11 @@ class Submitter:
     @property
     def resources_cmd(self) -> str:
         mem_in_clusters_units = self.mem_mb.to(self.memory_units)
-        value_to_submit = math.ceil(mem_in_clusters_units.value)
+        mem_value_to_submit = math.ceil(mem_in_clusters_units.value)
         return (
-            "-M {mem_mb} -n {threads} "
-            "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}] span[hosts=1]'"
-        ).format(mem_mb=value_to_submit, threads=self.threads)
+            "-M {mem} -n {threads} "
+            "-R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'"
+        ).format(mem=mem_value_to_submit, threads=self.threads)
 
     @property
     def wildcards(self) -> dict:
