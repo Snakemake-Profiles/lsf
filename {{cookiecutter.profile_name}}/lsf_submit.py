@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+import math
 import re
 import subprocess
 import sys
-from enum import Enum
 from pathlib import Path
 from typing import List, Union, Optional
 
@@ -13,10 +13,12 @@ if not __name__.startswith("tests.src."):
     from OSLayer import OSLayer
     from CookieCutter import CookieCutter
     from lsf_config import Config
+    from memory_units import Unit, Memory
 else:
     from .OSLayer import OSLayer
     from .CookieCutter import CookieCutter
     from .lsf_config import Config
+    from .memory_units import Unit, Memory
 
 PathLike = Union[str, Path]
 
@@ -29,26 +31,12 @@ class JobidNotFoundError(Exception):
     pass
 
 
-class MemoryUnits(Enum):
-    """See https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_command_ref/bsub.__r.1.html
-    for valid units.
-    """
-
-    KB = "KB"
-    MB = "MB"
-    GB = "GB"
-    TB = "TB"
-    PB = "PB"
-    EB = "EB"
-    ZB = "ZB"
-
-
 class Submitter:
     def __init__(
         self,
         jobscript: PathLike,
         cluster_cmds: List[str] = None,
-        memory_units: MemoryUnits = MemoryUnits.KB,
+        memory_units: Unit = Unit.MEGA,
         lsf_config: Optional[Config] = None,
     ):
         if cluster_cmds is None:
@@ -84,21 +72,24 @@ class Submitter:
         return self.job_properties.get("resources", dict())
 
     @property
-    def mem_mb(self) -> int:
-        return self.resources.get(
+    def mem_mb(self) -> Memory:
+        mem_value = self.resources.get(
             "mem_mb", self.cluster.get("mem_mb", CookieCutter.get_default_mem_mb())
         )
+        return Memory(mem_value, unit=Unit.MEGA)
 
     @property
-    def memory_units(self) -> str:
-        return self._memory_units.value
+    def memory_units(self) -> Unit:
+        return self._memory_units
 
     @property
     def resources_cmd(self) -> str:
+        mem_in_clusters_units = self.mem_mb.to(self.memory_units)
+        mem_value_to_submit = math.ceil(mem_in_clusters_units.value)
         return (
-            "-M {mem_mb}{units} -n {threads} "
-            "-R 'select[mem>{mem_mb}{units}] rusage[mem={mem_mb}{units}] span[hosts=1]'"
-        ).format(mem_mb=self.mem_mb, threads=self.threads, units=self.memory_units)
+            "-M {mem} -n {threads} "
+            "-R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'"
+        ).format(mem=mem_value_to_submit, threads=self.threads)
 
     @property
     def wildcards(self) -> dict:
@@ -236,7 +227,7 @@ if __name__ == "__main__":
 
     jobscript = sys.argv[-1]
     cluster_cmds = sys.argv[1:-1]
-    memory_units = MemoryUnits.MB
+    memory_units = Unit.from_suffix(CookieCutter.get_lsf_unit_for_limits())
     lsf_submit = Submitter(
         jobscript=jobscript,
         memory_units=memory_units,

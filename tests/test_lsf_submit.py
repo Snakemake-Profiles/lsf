@@ -6,13 +6,13 @@ from unittest.mock import patch
 
 from tests.src.CookieCutter import CookieCutter
 from tests.src.OSLayer import OSLayer
+from tests.src.lsf_config import Config
 from tests.src.lsf_submit import (
     Submitter,
     BsubInvocationError,
     JobidNotFoundError,
-    MemoryUnits,
 )
-from tests.src.lsf_config import Config
+from tests.src.memory_units import Unit, Memory
 
 
 class TestSubmitter(unittest.TestCase):
@@ -34,7 +34,8 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        memory_units = MemoryUnits.GB
+        memory_units = Unit.KILO
+        memory_mb_value = 2662
         jobscript = argv[-1]
         cluster_cmds = argv[1:-1]
         lsf_submit = Submitter(
@@ -45,14 +46,14 @@ class TestSubmitter(unittest.TestCase):
             lsf_submit.cluster_cmd, "cluster_opt_1 cluster_opt_2 cluster_opt_3"
         )
         self.assertEqual(lsf_submit.threads, 1)
-        self.assertEqual(lsf_submit.mem_mb, 2662)
+        self.assertEqual(lsf_submit.mem_mb, Memory(memory_mb_value, Unit.MEGA))
         self.assertEqual(lsf_submit.jobid, 2)
         expected_wildcards_str = "i=0"
         self.assertEqual(lsf_submit.wildcards_str, expected_wildcards_str)
         expected_rule_name = "search_fasta_on_index"
         self.assertEqual(lsf_submit.rule_name, expected_rule_name)
         self.assertEqual(lsf_submit.is_group_jobtype, False)
-        expected_mem = "2662GB"
+        expected_mem = "{}000".format(memory_mb_value)
         self.assertEqual(
             lsf_submit.resources_cmd,
             "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'".format(
@@ -177,7 +178,7 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        mem_units = MemoryUnits.MB
+        mem_units = Unit.MEGA
         jobscript = argv[-1]
         cluster_cmds = argv[1:-1]
         lsf_submit = Submitter(
@@ -187,7 +188,7 @@ class TestSubmitter(unittest.TestCase):
         lsf_submit.submit()
 
         expected_logdir = (
-                Path("logdir") / lsf_submit.rule_name / lsf_submit.wildcards_str
+            Path("logdir") / lsf_submit.rule_name / lsf_submit.wildcards_str
         )
         mkdir_mock.assert_called_once_with(expected_logdir)
         self.assertEqual(remove_file_mock.call_count, 2)
@@ -198,7 +199,7 @@ class TestSubmitter(unittest.TestCase):
         )
         remove_file_mock.assert_any_call(expected_outlog)
         remove_file_mock.assert_any_call(expected_errlog)
-        expected_mem = "2662{}".format(mem_units.value)
+        expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
@@ -257,7 +258,7 @@ class TestSubmitter(unittest.TestCase):
         )
         remove_file_mock.assert_any_call(expected_outlog)
         remove_file_mock.assert_any_call(expected_errlog)
-        expected_mem = "2662KB"
+        expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
@@ -311,7 +312,7 @@ class TestSubmitter(unittest.TestCase):
             "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
         )
         lsf_config = Config.from_stream(stream)
-        memory_units = MemoryUnits.GB
+        memory_units = Unit.MEGA
         jobscript = argv[-1]
         cluster_cmds = argv[1:-1]
         lsf_submit = Submitter(
@@ -323,7 +324,117 @@ class TestSubmitter(unittest.TestCase):
 
         actual = lsf_submit.submit_cmd
         print(actual)
-        expected_mem = "2662{}".format(memory_units.value)
+        expected_mem = "2662"
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
+        expected = (
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "-q queue -gpu - -P project "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
+        )
+        print(expected)
+
+        assert actual == expected
+
+    @patch.object(
+        CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
+    )
+    @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
+    def test_lsf_mem_unit_is_kb_and_mem_mb_is_converted_accordingly(self, *mocks):
+        argv = [
+            "script_name",
+            "cluster_opt_1",
+            "cluster_opt_2",
+            "cluster_opt_3",
+            "real_jobscript.sh",
+        ]
+        stream = StringIO(
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        )
+        lsf_config = Config.from_stream(stream)
+        lsf_mem_unit = Unit.KILO
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(
+            jobscript=jobscript,
+            cluster_cmds=cluster_cmds,
+            memory_units=lsf_mem_unit,
+            lsf_config=lsf_config,
+        )
+
+        actual = lsf_submit.submit_cmd
+        print(actual)
+        expected_mem = "2662000"
+        expected_outlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
+        )
+        expected_errlog = (
+            Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
+        )
+        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
+            outlog=expected_outlog, errlog=expected_errlog
+        )
+        expected = (
+            "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
+            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "-q queue -gpu - -P project "
+            "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
+        )
+        print(expected)
+
+        assert actual == expected
+
+    @patch.object(
+        CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
+    )
+    @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
+    def test_lsf_mem_unit_is_tb_and_mem_mb_is_converted_accordingly_and_rounded_up_to_int(
+        self, *mocks
+    ):
+        argv = [
+            "script_name",
+            "cluster_opt_1",
+            "cluster_opt_2",
+            "cluster_opt_3",
+            "real_jobscript.sh",
+        ]
+        stream = StringIO(
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        )
+        lsf_config = Config.from_stream(stream)
+        lsf_mem_unit = Unit.TERA
+        jobscript = argv[-1]
+        cluster_cmds = argv[1:-1]
+        lsf_submit = Submitter(
+            jobscript=jobscript,
+            cluster_cmds=cluster_cmds,
+            memory_units=lsf_mem_unit,
+            lsf_config=lsf_config,
+        )
+
+        actual = lsf_submit.submit_cmd
+        print(actual)
+        expected_mem = "1"
         expected_outlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
         )

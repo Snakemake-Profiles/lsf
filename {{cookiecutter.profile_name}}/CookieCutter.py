@@ -18,3 +18,7 @@ class CookieCutter:
     @staticmethod
     def get_default_queue() -> str:
         return "{{cookiecutter.default_queue}}"
+
+    @staticmethod
+    def get_lsf_unit_for_limits() -> str:
+        return "{{cookiecutter.LSF_UNIT_FOR_LIMITS}}"

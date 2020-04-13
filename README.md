@@ -48,6 +48,30 @@ cookiecutter --output-dir "$profile_dir" "$template"
 
 You will then be prompted to set some default parameters.
 
+#### `LSF_UNIT_FOR_LIMITS`
+
+**Default**: `KB`  
+**Valid options:** `KB`, `MB`, `GB`, `TB`, `PB`, `EB`, `ZB`
+
+**⚠️IMPORTANT⚠️**: This **must** be set to the same as [`LSF_UNIT_FOR_LIMITS`][limits] on
+your cluster. This value is stored in your cluster's [`lsf.conf`][lsf-conf] file. In
+general, this file is located at `${LSF_ENVDIR}/lsf.conf`. So the easiest way to get
+this value is to run the following:
+
+```shell
+grep '^LSF_UNIT_FOR_LIMITS' ${LSF_ENVDIR}/lsf.conf
+```
+
+You should get something along the lines of `LSF_UNIT_FOR_LIMITS=MB`. If this command
+doesn't work, get in touch with your cluster administrator to find out the value.
+
+As mentioned above, this is a very important parameter. It sets the scaling units to use
+for resource limits. So, if this value is `MB` on your cluster, then when setting the
+memory limit with `-M 1000` the value is taken as megabytes. As `snakemake` allows you
+to set the memory for a rule with the `resources: mem_mb` parameter, it is important for
+this profile to know whether this then needs to be converted into other units when
+submitting jobs. See [here][18] for further information.
+
 #### `latency_wait`
 
 **Default:** `5`
@@ -65,9 +89,7 @@ From the `snakemake --help` menu
 #### `use_conda`
 
 **Default**: `False`  
-**Valid options:**
-- `False`
-- `True`
+**Valid options:** `False`, `True`
 
 This sets the default `--use-conda` parameter in `snakemake`.  
 From the `snakemake --help` menu
@@ -82,9 +104,7 @@ From the `snakemake --help` menu
 #### `use_singularity`
 
 **Default**: `False`  
-**Valid options:**
-- `False`
-- `True`
+**Valid options:** `False`, `True`
 
 This sets the default `--use-singularity` parameter in `snakemake`.  
 From the `snakemake --help` menu
@@ -111,9 +131,7 @@ From the `snakemake --help` menu
 #### `print_shell_commands`
 
 **Default**: `False`  
-**Valid options:**
-- `False`
-- `True`
+**Valid options:** `False`, `True`
 
 This sets the default ` --printshellcmds/-p` parameter in `snakemake`.  
 From the `snakemake --help` menu
@@ -359,3 +377,7 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 [config-deprecate]: https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#cluster-configuration-deprecated
 [yaml-collections]: https://yaml.org/spec/1.2/spec.html#id2759963
 [status-checker]: https://github.com/Snakemake-Profiles/snakemake-lsf/blob/master/%7B%7Bcookiecutter.profile_name%7D%7D/lsf_status.py
+[limits]: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_config_ref/lsf.conf.lsf_unit_for_limits.5.html
+[lsf-conf]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_config_ref/lsf.conf.5.html
+[18]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/18
+
