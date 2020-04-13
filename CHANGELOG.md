@@ -8,7 +8,7 @@ This document tracks changes to the `master` branch of the profile.
 
 
 
-**Added:**  
+**Added:**
 - Look at the log file if `bsub` returns an empty job status. See [#5][5] for more information.
 - Allow specifying per-rule cluster resource settings (similar to deprecated cluster config). See [#15][15] and [#7][7] for more information.
 - Added a `CONTRIBUTING.md` document [#15][15]
@@ -17,7 +17,7 @@ This document tracks changes to the `master` branch of the profile.
 
 **Changed:**
 - The naming of log files. See [#14][14] and [#15][15] for more information.
-- Explicitly set memory units when submitting as some clusters have different defaults [#9][9]  and [#11][11]
+- Robust memory handling [#18][18] and [#20][20]
 - README is now much more thorough [#15][15]
 
 [5]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/5
@@ -27,3 +27,5 @@ This document tracks changes to the `master` branch of the profile.
 [12]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/12
 [14]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/14
 [15]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/15
+[18]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/18
+[20]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/20
