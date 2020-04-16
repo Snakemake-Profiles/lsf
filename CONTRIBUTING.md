@@ -28,11 +28,11 @@ pip install -r dev-requirements.txt
 ## Tests
 
 Make sure the test suite passes before pushing any code. If you add any code, then please provide
-tests that cover all of the code added. The test suite can be run with
+tests that cover all of the code added. The test suite can be run with coverage
 
 ```shell
 cd tests
-pytest
+pytest --cov=./
 ```
 
 ## Formatting
