@@ -22,7 +22,7 @@ class TestTail:
 
     def test_numLinesIsNotInt_raisesError(self, tmpdir):
         path = str(tmpdir)
-        with pytest.raises(TailError) as err:
+        with pytest.raises(TailError):
             OSLayer.tail(path, num_lines=3.3)
 
     def test_oneLineInFile_returnsLine(self, tmpdir):

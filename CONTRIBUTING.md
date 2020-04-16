@@ -39,7 +39,17 @@ pytest
 
 Please format code with [`black`][black] (default settings) before pushing.
 
+```shell
+black .
+```
+
 ## Linting
+
+Ensure there are no `flake8` errors before pushing.
+
+```shell
+flake8 --count .
+```
 
 Please make sure you use [type annotations][types] for function parameters and return types.
 

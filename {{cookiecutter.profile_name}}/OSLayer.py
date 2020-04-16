@@ -3,6 +3,9 @@ import uuid
 from pathlib import Path
 from typing import Tuple, List
 
+stdout = str
+stderr = str
+
 
 class TailError(Exception):
     pass
@@ -11,8 +14,8 @@ class TailError(Exception):
 class OSLayer:
     """
     This class provides an abstract layer to communicating with the OS.
-    Its main purpose is to enable OS operations mocking, so we don't actually need to make file operations or create
-    processes.
+    Its main purpose is to enable OS operations mocking, so we don't actually need to
+    make file operations or create processes.
     """
 
     @staticmethod
@@ -23,9 +26,6 @@ class OSLayer:
     def remove_file(file: Path):
         if file.is_file():
             file.unlink()
-
-    stdout = str
-    stderr = str
 
     @staticmethod
     def run_process(cmd: str) -> Tuple[stdout, stderr]:
