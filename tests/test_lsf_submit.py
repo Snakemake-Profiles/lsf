@@ -56,11 +56,11 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.rule_name, expected_rule_name)
         self.assertEqual(lsf_submit.is_group_jobtype, False)
         expected_mem = "{}000".format(memory_mb_value)
+        expected_resource_cmd = (
+            "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'"
+        ).format(mem=expected_mem)
         self.assertEqual(
-            lsf_submit.resources_cmd,
-            "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'".format(
-                mem=expected_mem
-            ),
+            lsf_submit.resources_cmd, expected_resource_cmd,
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         expected_logdir = Path("logdir") / expected_rule_name / expected_wildcards_str
@@ -69,9 +69,9 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.outlog, expected_outlog)
         expected_errlog = expected_logdir / "jobid2_random.err"
         self.assertEqual(lsf_submit.errlog, expected_errlog)
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         self.assertEqual(
             lsf_submit.jobinfo_cmd, expected_jobinfo_cmd,
         )
@@ -87,7 +87,10 @@ class TestSubmitter(unittest.TestCase):
         OSLayer,
         OSLayer.run_process.__name__,
         return_value=(
-            "Job <8697223> is submitted to default queue <research-rh74>. logs/cluster/2_z137TAmCoQGdWHohm5m2zHH5E5MWxmTUJTdU1Uj3iqKVILs4n3R37nruIEJBcQoi.out",
+            (
+                "Job <8697223> is submitted to default queue <research-rh74>. "
+                "logs/cluster/2_z137TAmCoQGdWHohm5m2zHH5EruIEJBcQoi.out"
+            ),
             "",
         ),
     )
@@ -196,9 +199,9 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         expected_outlog = expected_logdir / "jobid2_random.out"
         expected_errlog = expected_logdir / "jobid2_random.err"
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         remove_file_mock.assert_any_call(expected_outlog)
         remove_file_mock.assert_any_call(expected_errlog)
         expected_mem = "2662"
@@ -255,9 +258,9 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(remove_file_mock.call_count, 2)
         expected_outlog = expected_logdir / "jobid2_random.out"
         expected_errlog = expected_logdir / "jobid2_random.err"
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         remove_file_mock.assert_any_call(expected_outlog)
         remove_file_mock.assert_any_call(expected_errlog)
         expected_mem = "2662"
@@ -310,9 +313,11 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        stream = StringIO(
-            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        content = (
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
+            "search_fasta_on_index: '-P project'"
         )
+        stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
         memory_units = Unit.MEGA
         jobscript = argv[-1]
@@ -332,9 +337,9 @@ class TestSubmitter(unittest.TestCase):
         expected_errlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
         )
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
@@ -362,9 +367,11 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        stream = StringIO(
-            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        content = (
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
+            "search_fasta_on_index: '-P project'"
         )
+        stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
         lsf_mem_unit = Unit.KILO
         jobscript = argv[-1]
@@ -384,9 +391,9 @@ class TestSubmitter(unittest.TestCase):
         expected_errlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
         )
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
@@ -406,7 +413,7 @@ class TestSubmitter(unittest.TestCase):
         CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
-    def test_lsf_mem_unit_is_tb_and_mem_mb_is_converted_accordingly_and_rounded_up_to_int(
+    def test_lsf_mem_unit_is_tb_and_mem_mb_is_converted_and_rounded_up_to_int(
         self, *mocks
     ):
         argv = [
@@ -416,9 +423,11 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        stream = StringIO(
-            "__default__:\n  - '-q queue'\n  - '-gpu -'\nsearch_fasta_on_index: '-P project'"
+        content = (
+            "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
+            "search_fasta_on_index: '-P project'"
         )
+        stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
         lsf_mem_unit = Unit.TERA
         jobscript = argv[-1]
@@ -438,9 +447,9 @@ class TestSubmitter(unittest.TestCase):
         expected_errlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.err"
         )
-        expected_jobinfo_cmd = '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'.format(
-            outlog=expected_outlog, errlog=expected_errlog
-        )
+        expected_jobinfo_cmd = (
+            '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
+        ).format(outlog=expected_outlog, errlog=expected_errlog)
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
@@ -489,7 +498,7 @@ class TestSubmitter(unittest.TestCase):
 
     def test_is_group_jobtype_when_group_is_not_present(self):
         jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
-        properties = json.dumps({"jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",})
+        properties = json.dumps({"jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d"})
         script_content = "#!/bin/sh\n# properties = {}\necho something".format(
             properties
         )
@@ -542,7 +551,7 @@ class TestSubmitter(unittest.TestCase):
     def test_jobname_for_non_group(self):
         jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
         properties = json.dumps(
-            {"type": "single", "rule": "search", "wildcards": {"i": "0"}, "jobid": 2,}
+            {"type": "single", "rule": "search", "wildcards": {"i": "0"}, "jobid": 2}
         )
         script_content = "#!/bin/sh\n# properties = {}\necho something".format(
             properties

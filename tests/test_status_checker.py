@@ -15,7 +15,7 @@ def assert_called_n_times_with_same_args(mock, n, args):
         assert " ".join(call_args) == args
 
 
-class Test_LSF_Status_Checker(unittest.TestCase):
+class TestStatusChecker(unittest.TestCase):
     @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("PEND", ""))
     def test___get_status___bjobs_says_process_is_PEND___job_status_is_running(
         self, run_process_mock
@@ -127,7 +127,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process.__name__)
-    def test___get_status___bjobs_fails_three_times_but_says_DONE_in_the_fourth___job_status_is_success(
+    def test_get_status_bjobs_fails_three_times_succeeds_fourth_job_status_is_success(
         self, run_process_mock
     ):
         self.count_fail_three_times_and_then_return_DONE = 0
@@ -158,7 +158,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         )
 
     @patch.object(OSLayer, OSLayer.run_process.__name__)
-    def test___get_status___bjobs_fails_three_times_but_says_PEND_in_the_fourth___job_status_is_running(
+    def test_get_status_bjobs_fails_three_times_PEND_fourth_time_job_status_running(
         self, run_process_mock
     ):
         self.count_fail_three_times_and_then_return_PEND = 0
@@ -189,7 +189,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         )
 
     @patch.object(OSLayer, OSLayer.run_process.__name__)
-    def test___get_status___bjobs_fails_one_but_says_EXIT_in_the_fourth___job_status_is_failed(
+    def test_get_status_bjobs_fails_once_says_EXIT_in_the_fourth_job_status_is_failed(
         self, run_process_mock
     ):
         self.count_fail_three_times_and_then_return_FAIL = 0
@@ -221,7 +221,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Successfully completed.", "", "Resource usage summary:"],
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_success(
+    def test_get_status_bjobs_fails_query_status_using_log_job_status_is_success(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
@@ -241,7 +241,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Exited with exit code 1.", "", "Resource usage summary:"],
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___job_status_is_failed(
+    def test_get_status_bjobs_fails_query_status_using_log_job_status_is_failed(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
@@ -261,7 +261,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         side_effect=FileNotFoundError,
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_does_not_yet_exists___job_status_is_running(
+    def test_get_status_bjobs_fails_log_file_does_not_yet_exists_job_status_is_running(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
@@ -281,7 +281,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         return_value=["...", "..."],
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_exit_info_not_yet_written___job_status_is_running(
+    def test_get_status_bjobs_fails_exit_info_not_yet_written_job_status_is_running(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
@@ -301,7 +301,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         return_value=["Successfully completed.", ""],
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_resource_line_does_not_exist___job_status_is_running(
+    def test_get_status_bjobs_fails_resource_line_does_not_exist_job_status_is_running(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
@@ -321,7 +321,7 @@ class Test_LSF_Status_Checker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         return_value=["I am an unknown status line", "", "Resource usage summary:"],
     )
-    def test___get_status___bjobs_fails_all_times___query_status_using_log___log_file_exists_but_resource_line_is_not_recognised___job_status_is_running(
+    def test_get_status_bjobs_fails_resource_line_not_recognised_job_status_is_running(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(

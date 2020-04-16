@@ -28,18 +28,28 @@ pip install -r dev-requirements.txt
 ## Tests
 
 Make sure the test suite passes before pushing any code. If you add any code, then please provide
-tests that cover all of the code added. The test suite can be run with
+tests that cover all of the code added. The test suite can be run with coverage
 
 ```shell
 cd tests
-pytest
+pytest --cov=./
 ```
 
 ## Formatting
 
 Please format code with [`black`][black] (default settings) before pushing.
 
+```shell
+black .
+```
+
 ## Linting
+
+Ensure there are no `flake8` errors before pushing.
+
+```shell
+flake8 --count .
+```
 
 Please make sure you use [type annotations][types] for function parameters and return types.
 

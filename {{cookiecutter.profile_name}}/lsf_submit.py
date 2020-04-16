@@ -205,7 +205,7 @@ class Submitter:
 
     def submit(self):
         self._create_logdir()
-        self._remove_previous_logs()  # we could be very unlucky of having the same 64-length random string with the same jobid
+        self._remove_previous_logs()
         try:
             external_job_id = self._submit_cmd_and_get_external_job_id()
             parameters_to_status_script = self._get_parameters_to_status_script(
