@@ -1,3 +1,5 @@
+import json
+import tempfile
 import unittest
 from io import StringIO
 from pathlib import Path
@@ -47,7 +49,7 @@ class TestSubmitter(unittest.TestCase):
         )
         self.assertEqual(lsf_submit.threads, 1)
         self.assertEqual(lsf_submit.mem_mb, Memory(memory_mb_value, Unit.MEGA))
-        self.assertEqual(lsf_submit.jobid, 2)
+        self.assertEqual(lsf_submit.jobid, "2")
         expected_wildcards_str = "i=0"
         self.assertEqual(lsf_submit.wildcards_str, expected_wildcards_str)
         expected_rule_name = "search_fasta_on_index"
@@ -323,7 +325,6 @@ class TestSubmitter(unittest.TestCase):
         )
 
         actual = lsf_submit.submit_cmd
-        print(actual)
         expected_mem = "2662"
         expected_outlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
@@ -340,7 +341,6 @@ class TestSubmitter(unittest.TestCase):
             "-q queue -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
-        print(expected)
 
         assert actual == expected
 
@@ -377,7 +377,6 @@ class TestSubmitter(unittest.TestCase):
         )
 
         actual = lsf_submit.submit_cmd
-        print(actual)
         expected_mem = "2662000"
         expected_outlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
@@ -394,7 +393,6 @@ class TestSubmitter(unittest.TestCase):
             "-q queue -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
-        print(expected)
 
         assert actual == expected
 
@@ -433,7 +431,6 @@ class TestSubmitter(unittest.TestCase):
         )
 
         actual = lsf_submit.submit_cmd
-        print(actual)
         expected_mem = "1"
         expected_outlog = (
             Path("logdir") / "search_fasta_on_index" / "i=0" / "jobid2_random.out"
@@ -450,7 +447,131 @@ class TestSubmitter(unittest.TestCase):
             "-q queue -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
-        print(expected)
+
+        assert actual == expected
+
+    def test_rule_name_for_group_returns_groupid_instead(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {
+                "type": "group",
+                "groupid": "mygroup",
+                "jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",
+            }
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        actual = lsf_submit.rule_name
+        expected = "mygroup"
+
+        assert actual == expected
+
+    def test_is_group_jobtype_when_group_is_present(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {
+                "type": "group",
+                "groupid": "mygroup",
+                "jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",
+            }
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        assert lsf_submit.is_group_jobtype
+
+    def test_is_group_jobtype_when_group_is_not_present(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps({"jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",})
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        assert not lsf_submit.is_group_jobtype
+
+    def test_jobid_for_group_returns_first_segment_of_uuid(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {
+                "type": "group",
+                "groupid": "mygroup",
+                "jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",
+            }
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        actual = lsf_submit.jobid
+        expected = "a9722c33"
+
+        assert actual == expected
+
+    def test_jobid_for_non_group_returns_job_number(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {
+                "type": "single",
+                "rule": "search_fasta_on_index",
+                "wildcards": {"i": "0"},
+                "jobid": 2,
+            }
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        actual = lsf_submit.jobid
+        expected = "2"
+
+        assert actual == expected
+
+    def test_jobname_for_non_group(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {"type": "single", "rule": "search", "wildcards": {"i": "0"}, "jobid": 2,}
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        actual = lsf_submit.jobname
+        expected = "search.i=0"
+
+        assert actual == expected
+
+    def test_jobname_for_group(self):
+        jobscript = Path(tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name)
+        properties = json.dumps(
+            {
+                "type": "group",
+                "groupid": "mygroup",
+                "jobid": "a9722c33-51ba-5ac4-9f17-bab04c68bc3d",
+            }
+        )
+        script_content = "#!/bin/sh\n# properties = {}\necho something".format(
+            properties
+        )
+        jobscript.write_text(script_content)
+        lsf_submit = Submitter(jobscript=str(jobscript))
+
+        actual = lsf_submit.jobname
+        expected = "mygroup_a9722c33"
 
         assert actual == expected
 

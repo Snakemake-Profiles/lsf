@@ -104,7 +104,9 @@ class Submitter:
 
     @property
     def rule_name(self) -> str:
-        return self.job_properties.get("rule", "rule_name")
+        if not self.is_group_jobtype:
+            return self.job_properties.get("rule", "rule_name")
+        return self.groupid
 
     @property
     def groupid(self) -> str:
@@ -126,10 +128,10 @@ class Submitter:
         )
 
     @property
-    def jobid(self) -> int:
+    def jobid(self) -> str:
         if self.is_group_jobtype:
-            return int(self.job_properties.get("jobid", "").split("-")[0])
-        return int(self.job_properties.get("jobid"))
+            return self.job_properties.get("jobid", "").split("-")[0]
+        return str(self.job_properties.get("jobid"))
 
     @property
     def logdir(self) -> Path:
