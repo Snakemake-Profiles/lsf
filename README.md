@@ -1,6 +1,7 @@
 # Snakemake LSF profile
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Snakemake-Profiles/snakemake-lsf/Python_package)](https://github.com/Snakemake-Profiles/snakemake-lsf/actions)
+[![Code coverage](https://codecov.io/gh/Snakemake-Profiles/snakemake-lsf/branch/master/graph/badge.svg)](https://codecov.io/gh/Snakemake-Profiles/snakemake-lsf)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python versions](https://img.shields.io/badge/Python%20versions->=3.5-blue)
 ![License](https://img.shields.io/github/license/Snakemake-Profiles/snakemake-lsf)
