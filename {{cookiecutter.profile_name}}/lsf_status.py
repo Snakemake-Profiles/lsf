@@ -9,8 +9,10 @@ from typing import List
 if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
     from OSLayer import OSLayer
+    from CookieCutter import CookieCutter
 else:
     from .OSLayer import OSLayer
+    from .CookieCutter import CookieCutter
 
 
 class BjobsError(Exception):
@@ -19,6 +21,9 @@ class BjobsError(Exception):
 
 class UnknownStatusLine(Exception):
     pass
+
+
+UNKNOWN = "UNKWN"
 
 
 class StatusChecker:
@@ -36,7 +41,7 @@ class StatusChecker:
         "EXIT": FAILED,
         "POST_DONE": SUCCESS,
         "POST_ERR": FAILED,
-        "UNKWN": RUNNING,
+        "ZOMBI": FAILED,
     }
 
     def __init__(
@@ -45,11 +50,13 @@ class StatusChecker:
         outlog: str,
         wait_between_tries: float = 0.001,
         max_status_checks: int = 1,
+        kill_unknown: bool = False,
     ):
         self._jobid = jobid
         self._outlog = outlog
         self.wait_between_tries = wait_between_tries
         self.max_status_checks = max_status_checks
+        self.kill_unknown = kill_unknown
 
     @property
     def jobid(self) -> int:
@@ -74,12 +81,27 @@ class StatusChecker:
                 )
             )
 
+        if output_stream == UNKNOWN and self.kill_unknown:
+            print(
+                "[lsf profile warning] {unknown} job status detected for {jobid}. "
+                "Killing job...".format(unknown=UNKNOWN, jobid=self.jobid),
+                file=sys.stderr,
+            )
+            self._kill_unknown_job()
+            return self.FAILED
+        elif output_stream == UNKNOWN and not self.kill_unknown:  # i.e. wait
+            return self.RUNNING
+
         return self.STATUS_TABLE[output_stream]
 
     def _get_tail_of_log_file(self) -> List[str]:
         # 30 lines gives us the whole LSF completion summary
         tail = OSLayer.tail(self.outlog, num_lines=30)
         return [line.decode().strip() for line in tail]
+
+    def _kill_unknown_job(self):
+        kill_cmd = "bkill -r {}".format(self.jobid)
+        _ = OSLayer.run_process(kill_cmd)
 
     def _query_status_using_log(self) -> str:
         try:
@@ -103,7 +125,7 @@ class StatusChecker:
         for _ in range(self.max_status_checks):
             try:
                 status = self._query_status_using_bjobs()
-                break  # succeeded on getting the status
+                break  # succeeded in getting the status
             except BjobsError as error:
                 print(
                     "[Predicted exception] BjobsError: {error}".format(error=error),
@@ -122,7 +144,7 @@ class StatusChecker:
                 time.sleep(self.wait_between_tries)
             except CalledProcessError as error:
                 print(
-                    "[Predicted exception] Error on calling bjobs: {error}".format(
+                    "[Predicted exception] Error calling bjobs: {error}".format(
                         error=error
                     ),
                     file=sys.stderr,
@@ -146,5 +168,15 @@ class StatusChecker:
 if __name__ == "__main__":
     jobid = int(sys.argv[1])
     outlog = sys.argv[2]
-    lsf_status_checker = StatusChecker(jobid, outlog)
+    if CookieCutter.get_unknwn_behaviour().lower() == "wait":
+        kill_unknown = False
+    elif CookieCutter.get_unknwn_behaviour().lower() == "kill":
+        kill_unknown = True
+    else:
+        raise ValueError(
+            "Unknown value for {}_behaviour: {}".format(
+                UNKNOWN, CookieCutter.get_unknwn_behaviour()
+            )
+        )
+    lsf_status_checker = StatusChecker(jobid, outlog, kill_unknown=kill_unknown)
     print(lsf_status_checker.get_status())
