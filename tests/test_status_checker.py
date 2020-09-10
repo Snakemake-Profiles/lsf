@@ -1,6 +1,6 @@
 import unittest
 from subprocess import CalledProcessError
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 import pytest
 
@@ -10,8 +10,8 @@ from tests.src.lsf_status import StatusChecker, BjobsError, UnknownStatusLine
 
 def assert_called_n_times_with_same_args(mock, n, args):
     assert mock.call_count == n
-    for call in mock.call_args_list:
-        call_args, _ = call
+    for mock_call in mock.call_args_list:
+        call_args, _ = mock_call
         assert " ".join(call_args) == args
 
 
@@ -77,14 +77,29 @@ class TestStatusChecker(unittest.TestCase):
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("UNKWN", ""))
-    def test___get_status___bjobs_says_process_is_UNKWN___job_status_is_running(
+    def test___get_status___status_UNKWN_and_wait_unknown___job_status_is_running(
         self, run_process_mock
     ):
-        lsf_status_checker = StatusChecker(123, "dummy")
+        lsf_status_checker = StatusChecker(123, "dummy", kill_unknown=False)
         actual = lsf_status_checker.get_status()
         expected = "running"
         self.assertEqual(actual, expected)
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
+
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("UNKWN", ""))
+    def test___get_status___status_UNKWN_and_kill_unknown___job_status_is_failed(
+        self, run_process_mock
+    ):
+        jobid = 123
+        lsf_status_checker = StatusChecker(jobid, "dummy", kill_unknown=True)
+        actual = lsf_status_checker.get_status()
+        expected = "failed"
+        self.assertEqual(actual, expected)
+        calls = [
+            call("bjobs -o 'stat' -noheader {}".format(jobid)),
+            call("bkill -r {}".format(jobid)),
+        ]
+        run_process_mock.assert_has_calls(calls, any_order=False)
 
     @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("EXIT", ""))
     def test___get_status___bjobs_says_process_is_EXIT___job_status_is_failed(

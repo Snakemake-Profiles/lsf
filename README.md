@@ -76,6 +76,16 @@ to set the memory for a rule with the `resources: mem_mb` parameter, it is impor
 this profile to know whether this then needs to be converted into other units when
 submitting jobs. See [here][18] for further information.
 
+#### `UNKWN_behaviour`
+
+**Default**: `wait`  
+**Valid options**: `wait`, `kill`
+
+When LSF returns a job status of `UNKWN` do you want to wait for the host the job is
+running on to be contactable again - i.e. consider the job running - or kill it as
+outlined
+[here](https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_admin/job_kill_force.html)?
+
 #### `latency_wait`
 
 **Default:** `5`

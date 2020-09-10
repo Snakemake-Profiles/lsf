@@ -1,5 +1,6 @@
 {
   "LSF_UNIT_FOR_LIMITS": ["KB", "MB", "GB", "TB", "PB", "EB", "ZB"],
+  "UNKWN_behaviour": ["wait", "kill"],
   "latency_wait": 5,
   "use_conda": false,
   "use_singularity": false,
