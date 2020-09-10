@@ -60,7 +60,8 @@ class TestSubmitter(unittest.TestCase):
             "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'"
         ).format(mem=expected_mem)
         self.assertEqual(
-            lsf_submit.resources_cmd, expected_resource_cmd,
+            lsf_submit.resources_cmd,
+            expected_resource_cmd,
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         expected_logdir = Path("logdir") / expected_rule_name / expected_wildcards_str
@@ -73,7 +74,8 @@ class TestSubmitter(unittest.TestCase):
             '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
         ).format(outlog=expected_outlog, errlog=expected_errlog)
         self.assertEqual(
-            lsf_submit.jobinfo_cmd, expected_jobinfo_cmd,
+            lsf_submit.jobinfo_cmd,
+            expected_jobinfo_cmd,
         )
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
         self.assertEqual(
