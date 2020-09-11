@@ -26,3 +26,7 @@ class CookieCutter:
     @staticmethod
     def get_unknwn_behaviour() -> str:
         return "{{cookiecutter.UNKWN_behaviour}}"
+
+    @staticmethod
+    def get_zombi_behaviour() -> str:
+        return "{{cookiecutter.ZOMBI_behaviour}}"

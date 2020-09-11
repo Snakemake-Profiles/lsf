@@ -24,6 +24,7 @@ class UnknownStatusLine(Exception):
 
 
 UNKNOWN = "UNKWN"
+ZOMBIE = "ZOMBI"
 
 
 class StatusChecker:
@@ -41,7 +42,6 @@ class StatusChecker:
         "EXIT": FAILED,
         "POST_DONE": SUCCESS,
         "POST_ERR": FAILED,
-        "ZOMBI": FAILED,
     }
 
     def __init__(
@@ -51,12 +51,14 @@ class StatusChecker:
         wait_between_tries: float = 0.001,
         max_status_checks: int = 1,
         kill_unknown: bool = False,
+        kill_zombie: bool = False,
     ):
         self._jobid = jobid
         self._outlog = outlog
         self.wait_between_tries = wait_between_tries
         self.max_status_checks = max_status_checks
         self.kill_unknown = kill_unknown
+        self.kill_zombie = kill_zombie
 
     @property
     def jobid(self) -> int:
@@ -70,6 +72,29 @@ class StatusChecker:
     def bjobs_query_cmd(self) -> str:
         return "bjobs -o 'stat' -noheader {jobid}".format(jobid=self.jobid)
 
+    def _handle_unknown_job(self) -> str:
+        if self.kill_unknown:
+            print(
+                "[lsf profile warning] {unknown} job status detected for {jobid}. "
+                "Killing job...".format(unknown=UNKNOWN, jobid=self.jobid),
+                file=sys.stderr,
+            )
+            self._kill_job()
+            return self.FAILED
+        else:  # i.e. wait
+            return self.RUNNING
+
+    def _handle_zombie_job(self) -> str:
+        if self.kill_zombie:
+            print(
+                "[lsf profile warning] {zombie} job status detected for {jobid}. "
+                "Killing job...".format(zombie=ZOMBIE, jobid=self.jobid),
+                file=sys.stderr,
+            )
+            self._kill_job()
+        # zombie jobs are always considered failed as they don't recover
+        return self.FAILED
+
     def _query_status_using_bjobs(self) -> str:
         output_stream, error_stream = OSLayer.run_process(self.bjobs_query_cmd)
 
@@ -81,16 +106,11 @@ class StatusChecker:
                 )
             )
 
-        if output_stream == UNKNOWN and self.kill_unknown:
-            print(
-                "[lsf profile warning] {unknown} job status detected for {jobid}. "
-                "Killing job...".format(unknown=UNKNOWN, jobid=self.jobid),
-                file=sys.stderr,
-            )
-            self._kill_unknown_job()
-            return self.FAILED
-        elif output_stream == UNKNOWN and not self.kill_unknown:  # i.e. wait
-            return self.RUNNING
+        if output_stream == UNKNOWN:
+            return self._handle_unknown_job()
+
+        if output_stream == ZOMBIE:
+            return self._handle_zombie_job()
 
         return self.STATUS_TABLE[output_stream]
 
@@ -99,7 +119,7 @@ class StatusChecker:
         tail = OSLayer.tail(self.outlog, num_lines=30)
         return [line.decode().strip() for line in tail]
 
-    def _kill_unknown_job(self):
+    def _kill_job(self):
         kill_cmd = "bkill -r {}".format(self.jobid)
         _ = OSLayer.run_process(kill_cmd)
 
@@ -178,5 +198,18 @@ if __name__ == "__main__":
                 UNKNOWN, CookieCutter.get_unknwn_behaviour()
             )
         )
-    lsf_status_checker = StatusChecker(jobid, outlog, kill_unknown=kill_unknown)
+    if CookieCutter.get_zombi_behaviour().lower() == "ignore":
+        kill_zombie = False
+    elif CookieCutter.get_zombi_behaviour().lower() == "kill":
+        kill_zombie = True
+    else:
+        raise ValueError(
+            "Unknown value for {}_behaviour: {}".format(
+                ZOMBIE, CookieCutter.get_zombi_behaviour()
+            )
+        )
+
+    lsf_status_checker = StatusChecker(
+        jobid, outlog, kill_unknown=kill_unknown, kill_zombie=kill_zombie
+    )
     print(lsf_status_checker.get_status())
