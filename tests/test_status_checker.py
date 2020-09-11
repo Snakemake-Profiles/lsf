@@ -5,7 +5,13 @@ from unittest.mock import patch, call
 import pytest
 
 from tests.src.OSLayer import OSLayer
-from tests.src.lsf_status import StatusChecker, BjobsError, UnknownStatusLine
+from tests.src.lsf_status import (
+    StatusChecker,
+    BjobsError,
+    UnknownStatusLine,
+    UNKNOWN,
+    ZOMBIE,
+)
 
 
 def assert_called_n_times_with_same_args(mock, n, args):
@@ -76,24 +82,52 @@ class TestStatusChecker(unittest.TestCase):
         self.assertEqual(actual, expected)
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
-    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("UNKWN", ""))
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=(UNKNOWN, ""))
     def test___get_status___status_UNKWN_and_wait_unknown___job_status_is_running(
         self, run_process_mock
     ):
         lsf_status_checker = StatusChecker(123, "dummy", kill_unknown=False)
         actual = lsf_status_checker.get_status()
-        expected = "running"
+        expected = lsf_status_checker.RUNNING
         self.assertEqual(actual, expected)
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
-    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=("UNKWN", ""))
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=(UNKNOWN, ""))
     def test___get_status___status_UNKWN_and_kill_unknown___job_status_is_failed(
         self, run_process_mock
     ):
         jobid = 123
         lsf_status_checker = StatusChecker(jobid, "dummy", kill_unknown=True)
         actual = lsf_status_checker.get_status()
-        expected = "failed"
+        expected = lsf_status_checker.FAILED
+        self.assertEqual(actual, expected)
+        calls = [
+            call("bjobs -o 'stat' -noheader {}".format(jobid)),
+            call("bkill -r {}".format(jobid)),
+        ]
+        run_process_mock.assert_has_calls(calls, any_order=False)
+
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=(ZOMBIE, ""))
+    def test___get_status___status_ZOMBI_and_ignore_zombie___job_status_is_failed(
+        self, run_process_mock
+    ):
+        jobid = 123
+        lsf_status_checker = StatusChecker(jobid, "dummy", kill_zombie=False)
+        actual = lsf_status_checker.get_status()
+        expected = lsf_status_checker.FAILED
+        self.assertEqual(actual, expected)
+        run_process_mock.assert_called_once_with(
+            "bjobs -o 'stat' -noheader {}".format(jobid)
+        )
+
+    @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=(ZOMBIE, ""))
+    def test___get_status___status_ZOMBI_and_kill_zombie___job_status_is_failed(
+        self, run_process_mock
+    ):
+        jobid = 123
+        lsf_status_checker = StatusChecker(jobid, "dummy", kill_zombie=True)
+        actual = lsf_status_checker.get_status()
+        expected = lsf_status_checker.FAILED
         self.assertEqual(actual, expected)
         calls = [
             call("bjobs -o 'stat' -noheader {}".format(jobid)),

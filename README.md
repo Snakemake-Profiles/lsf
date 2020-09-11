@@ -83,8 +83,16 @@ submitting jobs. See [here][18] for further information.
 
 When LSF returns a job status of `UNKWN` do you want to wait for the host the job is
 running on to be contactable again - i.e. consider the job running - or kill it as
-outlined
-[here](https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_admin/job_kill_force.html)?
+outlined [here][job_kill]?
+
+#### `ZOMBI_behaviour`
+
+**Default**: `ignore`  
+**Valid options**: `ignore`, `kill`
+
+When LSF returns a job status of `ZOMBI` do you want to ignore this (not clean it up) or
+kill it as outlined [here][job_kill]? Regardless of the option chosen, the job is
+considered failed.
 
 #### `latency_wait`
 
@@ -394,4 +402,5 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 [limits]: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_config_ref/lsf.conf.lsf_unit_for_limits.5.html
 [lsf-conf]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_config_ref/lsf.conf.5.html
 [18]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/18
+[job_kill]: https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_admin/job_kill_force.html
 
