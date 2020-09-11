@@ -384,7 +384,7 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 [leandro]: https://github.com/leoisl
 [snakemake_params]: https://snakemake.readthedocs.io/en/stable/executable.html#all-options
-[profile]: https://snakemake.readthedocs.io/en/stable/executable.html#profiles
+[profile]: https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles
 [lsf]: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_welcome/lsf_welcome.html
 [cookiecutter-repo]: https://github.com/audreyr/cookiecutter
 [cc-install]: https://cookiecutter.readthedocs.io/en/1.7.0/installation.html
