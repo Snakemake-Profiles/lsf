@@ -1,10 +1,10 @@
 # Snakemake LSF profile
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Snakemake-Profiles/snakemake-lsf/Python_package)](https://github.com/Snakemake-Profiles/snakemake-lsf/actions)
-[![Code coverage](https://codecov.io/gh/Snakemake-Profiles/snakemake-lsf/branch/master/graph/badge.svg)](https://codecov.io/gh/Snakemake-Profiles/snakemake-lsf)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Snakemake-Profiles/lsf/Python_package)](https://github.com/Snakemake-Profiles/lsf/actions)
+[![Code coverage](https://codecov.io/gh/Snakemake-Profiles/lsf/branch/master/graph/badge.svg)](https://codecov.io/gh/Snakemake-Profiles/lsf)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python versions](https://img.shields.io/badge/Python%20versions->=3.5-blue)
-![License](https://img.shields.io/github/license/Snakemake-Profiles/snakemake-lsf)
+![License](https://img.shields.io/github/license/Snakemake-Profiles/lsf)
 
 [Snakemake profile][profile] for running jobs on an [LSF][lsf] cluster.
 
@@ -398,9 +398,9 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 [bsub-q]: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_command_ref/bsub.q.1.html
 [config-deprecate]: https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#cluster-configuration-deprecated
 [yaml-collections]: https://yaml.org/spec/1.2/spec.html#id2759963
-[status-checker]: https://github.com/Snakemake-Profiles/snakemake-lsf/blob/master/%7B%7Bcookiecutter.profile_name%7D%7D/lsf_status.py
+[status-checker]: https://github.com/Snakemake-Profiles/lsf/blob/master/%7B%7Bcookiecutter.profile_name%7D%7D/lsf_status.py
 [limits]: https://www.ibm.com/support/knowledgecenter/en/SSWRJV_10.1.0/lsf_config_ref/lsf.conf.lsf_unit_for_limits.5.html
 [lsf-conf]: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_config_ref/lsf.conf.5.html
-[18]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/18
+[18]: https://github.com/Snakemake-Profiles/lsf/issues/18
 [job_kill]: https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_admin/job_kill_force.html
 
