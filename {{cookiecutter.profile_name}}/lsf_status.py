@@ -80,7 +80,7 @@ class StatusChecker:
                 file=sys.stderr,
             )
             self._kill_job()
-        # we return running regardless so that the zombie job gets cleaned up (if required)
+        # we return running regardless so that the zombie job gets cleaned up
         return self.RUNNING
 
     def _handle_zombie_job(self) -> str:
