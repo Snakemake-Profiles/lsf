@@ -93,13 +93,13 @@ class TestStatusChecker(unittest.TestCase):
         run_process_mock.assert_called_once_with("bjobs -o 'stat' -noheader 123")
 
     @patch.object(OSLayer, OSLayer.run_process.__name__, return_value=(UNKNOWN, ""))
-    def test___get_status___status_UNKWN_and_kill_unknown___job_status_is_failed(
+    def test___get_status___status_UNKWN_and_kill_unknown___job_status_is_running(
         self, run_process_mock
     ):
         jobid = 123
         lsf_status_checker = StatusChecker(jobid, "dummy", kill_unknown=True)
         actual = lsf_status_checker.get_status()
-        expected = lsf_status_checker.FAILED
+        expected = lsf_status_checker.RUNNING
         self.assertEqual(actual, expected)
         calls = [
             call("bjobs -o 'stat' -noheader {}".format(jobid)),
