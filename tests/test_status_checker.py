@@ -2,13 +2,10 @@ import unittest
 from subprocess import CalledProcessError
 from unittest.mock import patch, call
 
-import pytest
-
 from tests.src.OSLayer import OSLayer, TailError
 from tests.src.lsf_status import (
     StatusChecker,
     BjobsError,
-    UnknownStatusLine,
     UNKNOWN,
     ZOMBIE,
 )
@@ -348,10 +345,10 @@ class TestStatusChecker(unittest.TestCase):
     @patch.object(
         StatusChecker,
         StatusChecker._get_tail_of_log_file.__name__,
-        side_effect=TailError
+        side_effect=TailError,
     )
     def test_get_status_checking_log_raises_tail_error_status_is_failed(
-            self, get_lines_of_log_file_mock, run_process_mock
+        self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
             123, "dummy", wait_between_tries=0.001, max_status_checks=4
