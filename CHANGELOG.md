@@ -6,6 +6,8 @@ This document tracks changes to the `master` branch of the profile.
 
 ## 23/10/2020
 
+### Changed
+
 - When log file is not found, we now return failed instead of running. Returning running
   was effectively causing an infinite loop.
 - Unknown line status now also returns failed instead of raising an error. Raising
