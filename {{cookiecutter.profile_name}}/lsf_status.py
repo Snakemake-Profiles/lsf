@@ -8,10 +8,10 @@ from typing import List
 
 if not __name__.startswith("tests.src."):
     sys.path.append(str(Path(__file__).parent.absolute()))
-    from OSLayer import OSLayer
+    from OSLayer import OSLayer, TailError
     from CookieCutter import CookieCutter
 else:
-    from .OSLayer import OSLayer
+    from .OSLayer import OSLayer, TailError
     from .CookieCutter import CookieCutter
 
 
@@ -125,19 +125,28 @@ class StatusChecker:
     def _query_status_using_log(self) -> str:
         try:
             log_tail = self._get_tail_of_log_file()
+        except FileNotFoundError:
+            print("Log file {} not found".format(self.outlog), file=sys.stderr)
+            return self.FAILED
+        except TailError as error:
+            print("TailError: {}".format(error), file=sys.stderr)
+            return self.FAILED
+
+        try:
             resource_summary_usage_line_index = log_tail.index(
                 "Resource usage summary:"
             )
-            status_line = log_tail[resource_summary_usage_line_index - 2]
-
-            if status_line == "Successfully completed.":
-                return self.SUCCESS
-            elif status_line.startswith("Exited with exit code"):
-                return self.FAILED
-            else:
-                raise UnknownStatusLine(status_line)
-        except (FileNotFoundError, ValueError):
+        except ValueError:  # resource usage line not in tail
             return self.RUNNING
+
+        status_line = log_tail[resource_summary_usage_line_index - 2]
+
+        if status_line == "Successfully completed.":
+            return self.SUCCESS
+        elif status_line.startswith("Exited with exit code"):
+            return self.FAILED
+        else:
+            raise UnknownStatusLine(status_line)
 
     def get_status(self) -> str:
         status = None
@@ -179,7 +188,11 @@ class StatusChecker:
                 ),
                 file=sys.stderr,
             )
-            status = self._query_status_using_log()
+            try:
+                status = self._query_status_using_log()
+            except UnknownStatusLine as error:
+                print("UnknownStatusLine: {}".format(error), file=sys.stderr)
+                status = self.FAILED
 
         return status
 
