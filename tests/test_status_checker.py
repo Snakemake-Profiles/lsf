@@ -4,7 +4,7 @@ from unittest.mock import patch, call
 
 import pytest
 
-from tests.src.OSLayer import OSLayer
+from tests.src.OSLayer import OSLayer, TailError
 from tests.src.lsf_status import (
     StatusChecker,
     BjobsError,
@@ -310,14 +310,14 @@ class TestStatusChecker(unittest.TestCase):
         StatusChecker._get_tail_of_log_file.__name__,
         side_effect=FileNotFoundError,
     )
-    def test_get_status_bjobs_fails_log_file_does_not_yet_exists_job_status_is_running(
+    def test_get_status_bjobs_fails_log_file_does_not_exist_job_status_is_failed(
         self, get_lines_of_log_file_mock, run_process_mock
     ):
         lsf_status_checker = StatusChecker(
             123, "dummy", wait_between_tries=0.001, max_status_checks=4
         )
         actual = lsf_status_checker.get_status()
-        expected = "running"
+        expected = lsf_status_checker.FAILED
         self.assertEqual(actual, expected)
         assert_called_n_times_with_same_args(
             run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
@@ -337,7 +337,27 @@ class TestStatusChecker(unittest.TestCase):
             123, "dummy", wait_between_tries=0.001, max_status_checks=4
         )
         actual = lsf_status_checker.get_status()
-        expected = "running"
+        expected = lsf_status_checker.RUNNING
+        self.assertEqual(actual, expected)
+        assert_called_n_times_with_same_args(
+            run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
+        )
+        get_lines_of_log_file_mock.assert_called_once_with()
+
+    @patch.object(OSLayer, OSLayer.run_process.__name__, side_effect=BjobsError)
+    @patch.object(
+        StatusChecker,
+        StatusChecker._get_tail_of_log_file.__name__,
+        side_effect=TailError
+    )
+    def test_get_status_checking_log_raises_tail_error_status_is_failed(
+            self, get_lines_of_log_file_mock, run_process_mock
+    ):
+        lsf_status_checker = StatusChecker(
+            123, "dummy", wait_between_tries=0.001, max_status_checks=4
+        )
+        actual = lsf_status_checker.get_status()
+        expected = lsf_status_checker.FAILED
         self.assertEqual(actual, expected)
         assert_called_n_times_with_same_args(
             run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
@@ -357,7 +377,7 @@ class TestStatusChecker(unittest.TestCase):
             123, "dummy", wait_between_tries=0.001, max_status_checks=4
         )
         actual = lsf_status_checker.get_status()
-        expected = "running"
+        expected = lsf_status_checker.RUNNING
         self.assertEqual(actual, expected)
         assert_called_n_times_with_same_args(
             run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
@@ -376,10 +396,10 @@ class TestStatusChecker(unittest.TestCase):
         lsf_status_checker = StatusChecker(
             123, "dummy", wait_between_tries=0.001, max_status_checks=4
         )
-        with pytest.raises(UnknownStatusLine) as err:
-            lsf_status_checker.get_status()
+        actual = lsf_status_checker.get_status()
+        expected = lsf_status_checker.FAILED
 
-        assert err.match("I am an unknown status line")
+        assert actual == expected
         assert_called_n_times_with_same_args(
             run_process_mock, 4, "bjobs -o 'stat' -noheader 123"
         )
