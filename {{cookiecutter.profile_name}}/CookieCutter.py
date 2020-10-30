@@ -30,3 +30,7 @@ class CookieCutter:
     @staticmethod
     def get_zombi_behaviour() -> str:
         return "{{cookiecutter.ZOMBI_behaviour}}"
+
+    @staticmethod
+    def get_latency_wait() -> float:
+        return float("{{cookiecutter.latency_wait}}")

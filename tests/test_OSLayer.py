@@ -1,5 +1,8 @@
+from unittest.mock import patch
+
 import pytest
 
+from tests.src.CookieCutter import CookieCutter
 from tests.src.OSLayer import OSLayer, TailError
 
 
@@ -13,7 +16,10 @@ class TestTail:
 
         assert not actual
 
-    def test_nonExistentFile_raisesError(self):
+    @patch.object(
+        CookieCutter, CookieCutter.get_latency_wait.__name__, return_value=0.5
+    )
+    def test_nonExistentFile_raisesError(self, *mocks):
         path = "foo.bar"
         with pytest.raises(FileNotFoundError) as err:
             OSLayer.tail(path)
