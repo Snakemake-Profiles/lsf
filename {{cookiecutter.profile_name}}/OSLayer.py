@@ -1,7 +1,15 @@
 import subprocess
+import sys
+import time
 import uuid
 from pathlib import Path
 from typing import Tuple, List
+
+if not __name__.startswith("tests.src."):
+    sys.path.append(str(Path(__file__).parent.absolute()))
+    from CookieCutter import CookieCutter
+else:
+    from .CookieCutter import CookieCutter
 
 stdout = str
 stderr = str
@@ -48,7 +56,10 @@ class OSLayer:
     @staticmethod
     def tail(path: str, num_lines: int = 10) -> List[bytes]:
         if not Path(path).exists():
-            raise FileNotFoundError("{} does not exist.".format(path))
+            # allow for filesystem latency
+            time.sleep(CookieCutter.get_latency_wait())
+            if not Path(path).exists():
+                raise FileNotFoundError("{} does not exist.".format(path))
 
         process = subprocess.Popen(
             ["tail", "-n", str(num_lines), path],
