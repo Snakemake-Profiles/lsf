@@ -162,14 +162,12 @@ class TestParamsForRule:
         assert actual == expected
 
     def test_rule_and_default_present_returns_default_and_rule_params(self):
-        stream = StringIO(
-            "__default__: '-q foo'\nrule:\n  - '-P project'\n  - '-q bar'"
-        )
+        stream = StringIO("__default__: '-q foo'\nrule:\n  - '-P project'\n")
         config = Config.from_stream(stream)
         rulename = "rule"
 
         actual = config.params_for_rule(rulename)
-        expected = "-q foo -P project -q bar"
+        expected = "-q foo -P project"
 
         assert actual == expected
 
@@ -182,3 +180,24 @@ class TestParamsForRule:
         expected = "-P project -q bar"
 
         assert actual == expected
+
+    def test_rule_and_default_have_same_params_rule_params_take_precedent(self):
+        stream = StringIO(
+            "__default__: '-q foo'\nrule:\n  - '-P project'\n  - '-q bar'"
+        )
+        config = Config.from_stream(stream)
+        rulename = "rule"
+
+        actual = config.params_for_rule(rulename)
+        expected = "-q bar -P project"
+
+        assert actual == expected
+
+
+def test_args_to_dict():
+    args = '-W 0:01 -W 0:02 -J "test name"'
+
+    actual = Config.args_to_dict(args)
+    expected = {"-W": "0:02", "-J": "test name"}
+
+    assert actual == expected
