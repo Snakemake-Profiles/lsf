@@ -4,6 +4,18 @@
 
 This document tracks changes to the `master` branch of the profile.
 
+## [0.1.0] - 18/01/2021
+
+### Added
+
+- Version tagging to allow for user notification of changes to functionality
+
+### Changed
+
+- Parameters given in the config file are now deduplicated. For instance, if a default
+  for `-q` is given, and a rule specifies `-q` also, the rule's value for `-q` is chosen.
+  Previously, parameters were just concatenated [[#36][36]]
+
 ## 23/10/2020
 
 ### Changed
@@ -30,13 +42,14 @@ This document tracks changes to the `master` branch of the profile.
 - Robust memory handling [#18][18] and [#20][20]
 - README is now much more thorough [#15][15]
 
-[12]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/12
-[14]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/14
-[15]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/15
-[18]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/18
-[20]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/20
-[5]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/5
-[7]: https://github.com/Snakemake-Profiles/snakemake-lsf/issues/7
-[11]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/11
-[9]: https://github.com/Snakemake-Profiles/snakemake-lsf/pull/9
-
+[12]: https://github.com/Snakemake-Profiles/lsf/issues/12
+[14]: https://github.com/Snakemake-Profiles/lsf/issues/14
+[15]: https://github.com/Snakemake-Profiles/lsf/pull/15
+[18]: https://github.com/Snakemake-Profiles/lsf/issues/18
+[20]: https://github.com/Snakemake-Profiles/lsf/pull/20
+[5]: https://github.com/Snakemake-Profiles/lsf/pull/5
+[7]: https://github.com/Snakemake-Profiles/lsf/issues/7
+[11]: https://github.com/Snakemake-Profiles/lsf/pull/11
+[9]: https://github.com/Snakemake-Profiles/lsf/pull/9
+[36]: https://github.com/Snakemake-Profiles/lsf/issues/36
+[0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
