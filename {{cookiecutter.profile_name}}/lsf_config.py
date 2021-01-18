@@ -1,4 +1,7 @@
-from typing import TextIO, Union, List, Any
+import shlex
+from collections import OrderedDict
+from itertools import chain
+from typing import TextIO, Union, List, Any, Dict
 
 import yaml
 
@@ -19,6 +22,11 @@ class Config:
         return self._data.get(key, default)
 
     @staticmethod
+    def args_to_dict(args: str) -> Dict[str, str]:
+        args_iter = iter(shlex.split(args))
+        return OrderedDict(zip(args_iter, args_iter))
+
+    @staticmethod
     def concatenate_params(params: Union[List[str], str]) -> str:
         if isinstance(params, str):
             return params
@@ -28,9 +36,10 @@ class Config:
         return self.concatenate_params(self.get("__default__", ""))
 
     def params_for_rule(self, rulename: str) -> str:
-        default_params = self.default_params()
-        rule_params = self.concatenate_params(self.get(rulename, ""))
-        return self.concatenate_params([default_params, rule_params])
+        default_params = self.args_to_dict(self.default_params())
+        rule_params = self.args_to_dict(self.concatenate_params(self.get(rulename, "")))
+        default_params.update(rule_params)
+        return " ".join(chain.from_iterable(default_params.items()))
 
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":
