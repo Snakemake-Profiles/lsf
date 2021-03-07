@@ -1,4 +1,6 @@
 from io import StringIO
+import shlex
+import yaml
 from tests.src.lsf_config import Config
 
 
@@ -9,7 +11,7 @@ class TestBool:
         assert not config
 
     def test_non_empty_returns_true(self):
-        config = Config({1: 1})
+        config = Config({"1": "1"})
 
         assert config
 
@@ -190,6 +192,40 @@ class TestParamsForRule:
 
         actual = config.params_for_rule(rulename)
         expected = "-q bar -P project"
+
+        assert actual == expected
+
+
+class TestShellEscaping:
+    def test_resource_requirements_one_level_of_quoting(self):
+        config_string = """
+__default__:
+  - "-R 'select[mem>2000] rusage[mem=2000]'"
+"""
+        stream = StringIO(config_string)
+        config = Config.from_stream(stream)
+        actual = config.params_for_rule("rule")
+        assert len(shlex.split(actual)) == 2
+
+        stream.seek(0)
+        data = yaml.safe_load(stream)["__default__"][0]
+        expected = shlex.join(shlex.split(data))
+
+        assert actual == expected
+
+    def test_resource_requirements_two_levels_of_quoting(self):
+        config_string = """
+__default__:
+  - "-R \\"select[hname!='escaped-hostname']\\""
+"""
+        stream = StringIO(config_string)
+        config = Config.from_stream(stream)
+        actual = config.params_for_rule("rule")
+        assert len(shlex.split(actual)) == 2
+
+        stream.seek(0)
+        data = yaml.safe_load(stream)["__default__"][0]
+        expected = shlex.join(shlex.split(data))
 
         assert actual == expected
 
