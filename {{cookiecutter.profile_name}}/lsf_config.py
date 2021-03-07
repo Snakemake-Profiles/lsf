@@ -7,10 +7,11 @@ import yaml
 
 
 class Config:
-    def __init__(self, data: dict = None):
-        if data is None:
-            data = dict()
-        self._data = data
+    def __init__(self, data: Union[dict, None] = None):
+        self._data = dict()
+        if data is not None:
+            for key, value in data.items():
+                self._data[key] = self.concatenate_params(value)
 
     def __bool__(self) -> bool:
         return bool(self._data)
@@ -23,6 +24,11 @@ class Config:
 
     @staticmethod
     def args_to_dict(args: str) -> Dict[str, str]:
+        """
+        Converts a string into a dictionary where key/value pairs are consecutive
+        elements of the string.
+        Eg '-J "2" -q 3' --> {'-J': '2', '-q': '3'}
+        """
         args_iter = iter(shlex.split(args))
         return OrderedDict(zip(args_iter, args_iter))
 
@@ -33,13 +39,19 @@ class Config:
         return " ".join(filter(None, params))
 
     def default_params(self) -> str:
-        return self.concatenate_params(self.get("__default__", ""))
+        return self.get("__default__", "")
 
     def params_for_rule(self, rulename: str) -> str:
+        """
+        Loads default + rule-specific arguments.
+        Arguments specified for a rule override default-specified arguments.
+        Shlex-joining is required to properly pass quoted escapes in yaml
+        to the shell.
+        """
         default_params = self.args_to_dict(self.default_params())
-        rule_params = self.args_to_dict(self.concatenate_params(self.get(rulename, "")))
+        rule_params = self.args_to_dict(self.get(rulename, ""))
         default_params.update(rule_params)
-        return " ".join(chain.from_iterable(default_params.items()))
+        return shlex.join(chain.from_iterable(default_params.items()))
 
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":

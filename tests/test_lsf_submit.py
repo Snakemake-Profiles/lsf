@@ -60,8 +60,7 @@ class TestSubmitter(unittest.TestCase):
             "-M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]'"
         ).format(mem=expected_mem)
         self.assertEqual(
-            lsf_submit.resources_cmd,
-            expected_resource_cmd,
+            lsf_submit.resources_cmd, expected_resource_cmd,
         )
         self.assertEqual(lsf_submit.jobname, "search_fasta_on_index.i=0")
         expected_logdir = Path("logdir") / expected_rule_name / expected_wildcards_str
@@ -74,8 +73,7 @@ class TestSubmitter(unittest.TestCase):
             '-o "{outlog}" -e "{errlog}" -J "search_fasta_on_index.i=0"'
         ).format(outlog=expected_outlog, errlog=expected_errlog)
         self.assertEqual(
-            lsf_submit.jobinfo_cmd,
-            expected_jobinfo_cmd,
+            lsf_submit.jobinfo_cmd, expected_jobinfo_cmd,
         )
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
         self.assertEqual(
@@ -315,10 +313,12 @@ class TestSubmitter(unittest.TestCase):
             "cluster_opt_3",
             "real_jobscript.sh",
         ]
-        content = (
-            "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
-            "search_fasta_on_index: '-P project'"
-        )
+        content = """
+__default__:
+  - "-R 'select[mem>2000]'"
+  - '-gpu -'
+search_fasta_on_index: '-P project'
+"""
         stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
         memory_units = Unit.MEGA
@@ -345,7 +345,7 @@ class TestSubmitter(unittest.TestCase):
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "-q queue -gpu - -P project "
+            "-R 'select[mem>2000]' -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
 
