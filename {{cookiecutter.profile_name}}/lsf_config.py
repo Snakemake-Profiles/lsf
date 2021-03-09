@@ -24,8 +24,7 @@ class Config:
 
     @staticmethod
     def args_to_dict(args: str) -> Dict[str, str]:
-        """
-        Converts a string into a dictionary where key/value pairs are consecutive
+        """Converts a string into a dictionary where key/value pairs are consecutive
         elements of the string.
         Eg '-J "2" -q 3' --> {'-J': '2', '-q': '3'}
         """
@@ -43,8 +42,7 @@ class Config:
         return self.get("__default__", "")
 
     def params_for_rule(self, rulename: str) -> str:
-        """
-        Loads default + rule-specific arguments.
+        """Loads default + rule-specific arguments.
         Arguments specified for a rule override default-specified arguments.
         Shlex-joining is required to properly pass quoted escapes in yaml
         to the shell.

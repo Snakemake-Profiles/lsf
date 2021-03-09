@@ -303,7 +303,7 @@ All settings are given with the `rule` name as the key, and the additional clust
 settings as a string ([scalar][yaml-collections]) or list
 ([sequence][yaml-collections]).
 
-#### Example `lsf.yaml` configuration
+#### Examples
 
 `Snakefile`
 
@@ -355,9 +355,9 @@ foo: "-P gpu -gpu 'gpu resources'"
 
 The above is also a valid form of the previous example but **not recommended**.
 
-#### Quote-escaping in `lsf.yaml`
+#### Quote-escaping
 
-Some lsf commands require multiple levels of quote-escaping.
+Some LSF commands require multiple levels of quote-escaping.
 For example, to exclude a node from job submission which has non-alphabetic characters
 in its name ([docs](https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_command_ref/bsub.__r.1.html?view=embed)): `bsub -R "select[hname!='node-name']"`.
 
