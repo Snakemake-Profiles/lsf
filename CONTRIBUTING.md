@@ -40,6 +40,8 @@ pytest --cov=./
 Please format code with [`black`][black] (default settings) before pushing.
 
 ```shell
+# Install latest black
+pip install black
 black .
 ```
 
