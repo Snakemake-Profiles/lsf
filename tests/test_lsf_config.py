@@ -1,6 +1,4 @@
 from io import StringIO
-import shlex
-import yaml
 from tests.src.lsf_config import Config
 
 
