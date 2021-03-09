@@ -13,6 +13,12 @@ install-ci:
 lint:
 	flake8 .
 
+fmt:
+	black .
+
+check-fmt:
+	black --check .
+
 # TEST ########################################################################
 .PHONY: test
 test:
