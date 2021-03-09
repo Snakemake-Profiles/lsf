@@ -205,11 +205,8 @@ __default__:
         stream = StringIO(config_string)
         config = Config.from_stream(stream)
         actual = config.params_for_rule("rule")
-        assert len(shlex.split(actual)) == 2
 
-        stream.seek(0)
-        data = yaml.safe_load(stream)["__default__"][0]
-        expected = shlex.join(shlex.split(data))
+        expected = "-R 'select[mem>2000] rusage[mem=2000]'"
 
         assert actual == expected
 
@@ -221,11 +218,8 @@ __default__:
         stream = StringIO(config_string)
         config = Config.from_stream(stream)
         actual = config.params_for_rule("rule")
-        assert len(shlex.split(actual)) == 2
 
-        stream.seek(0)
-        data = yaml.safe_load(stream)["__default__"][0]
-        expected = shlex.join(shlex.split(data))
+        expected = "-R 'select[hname!='\"'\"'escaped-hostname'\"'\"']'"
 
         assert actual == expected
 

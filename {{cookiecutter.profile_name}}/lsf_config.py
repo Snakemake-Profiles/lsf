@@ -29,7 +29,8 @@ class Config:
         elements of the string.
         Eg '-J "2" -q 3' --> {'-J': '2', '-q': '3'}
         """
-        args_iter = iter(shlex.split(args))
+        args_iter = shlex.shlex(args, posix=True)
+        args_iter.whitespace_split = True
         return OrderedDict(zip(args_iter, args_iter))
 
     @staticmethod
@@ -51,7 +52,7 @@ class Config:
         default_params = self.args_to_dict(self.default_params())
         rule_params = self.args_to_dict(self.get(rulename, ""))
         default_params.update(rule_params)
-        return shlex.join(chain.from_iterable(default_params.items()))
+        return " ".join(map(shlex.quote, chain.from_iterable(default_params.items())))
 
     @staticmethod
     def from_stream(stream: TextIO) -> "Config":
