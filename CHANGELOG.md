@@ -4,12 +4,16 @@
 
 This document tracks changes to the `master` branch of the profile.
 
-## [unreleased]
+## [Unreleased]
 
-## Added
+## [0.1.1] - 16/03/2021
+
+### Added
+
 
 - Support for complex quote-expansion via `shlex` [[#39]][39]]
 - Function docstrings in `lsf_config.py` for documentation
+
 
 ## [0.1.0] - 18/01/2021
 
@@ -61,3 +65,6 @@ This document tracks changes to the `master` branch of the profile.
 [36]: https://github.com/Snakemake-Profiles/lsf/issues/36
 [39]: https://github.com/Snakemake-Profiles/lsf/issues/39
 [0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
+[0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
+[Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/v0.1.1...HEAD
+
