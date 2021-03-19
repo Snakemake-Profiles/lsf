@@ -582,6 +582,32 @@ search_fasta_on_index: '-P project'
 
         assert actual == expected
 
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
+    )
+    def test_time_resource_for_group(self, *mocks):
+        for time_str in ("time", "runtime", "walltime"):
+            jobscript = Path(
+                tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name
+            )
+            properties = json.dumps({"resources": {time_str: "00:01:00"}})
+            script_content = "#!/bin/sh\n# properties = {}\n" "echo something".format(
+                properties
+            )
+            jobscript.write_text(script_content)
+            lsf_submit = Submitter(jobscript=str(jobscript))
+
+            actual = lsf_submit.resources_cmd
+            expected = (
+                "-M 1000 -n 8 -R 'select[mem>1000] rusage[mem=1000] "
+                "span[hosts=1]' -W 00:01:00"
+            )
+
+            assert actual == expected
+
 
 if __name__ == "__main__":
     unittest.main()
