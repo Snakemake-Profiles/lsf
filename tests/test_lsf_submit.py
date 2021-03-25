@@ -597,7 +597,7 @@ class TestSubmitter(unittest.TestCase):
             jobscript = Path(
                 tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name
             )
-            properties = json.dumps({"resources": {time_str: "00:01:00"}})
+            properties = json.dumps({"resources": {time_str: 1}})
             script_content = "#!/bin/sh\n# properties = {}\n" "echo something".format(
                 properties
             )
