@@ -95,10 +95,7 @@ class Submitter:
 
         for time_str in ("time", "runtime", "walltime"):
             if self.resources.get(time_str, False):
-                time_in_mins = int(self.resources[time_str])
-                resources_str += " -W {:02d}:{:02d}".format(
-                    time_in_mins // 60, time_in_mins % 60
-                )
+                resources_str += " -W {}".format(self.resources[time_str])
         return resources_str
 
     @property

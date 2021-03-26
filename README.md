@@ -284,7 +284,7 @@ The following resources can be specified within a `rule`:
 - `resources:`
   - `mem_mb = <INT>`: the memory required for the rule, in megabytes. If not specified,
     will [default to the amount you set when initialising](#default-mem-mb) the profile.
-- `time: <STR>`: the runtime limit required for the rule, in minutes. If not specified, will default to the amount you set when initialising the profile.
+  - `time: <INT>`: the runtime limit required for the rule, in minutes.
 
 *NOTE: these settings will override the profile defaults.*
 
