@@ -593,7 +593,7 @@ class TestSubmitter(unittest.TestCase):
         CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
     )
     def test_time_resource_for_group(self, *mocks):
-        for time_str in ("time", "runtime", "walltime"):
+        for time_str in ("time", "runtime", "walltime", "time_min"):
             jobscript = Path(
                 tempfile.NamedTemporaryFile(delete=False, suffix=".sh").name
             )
