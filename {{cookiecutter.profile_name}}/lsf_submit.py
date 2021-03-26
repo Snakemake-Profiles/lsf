@@ -93,7 +93,7 @@ class Submitter:
             )
         )
 
-        for time_str in ("time", "runtime", "walltime"):
+        for time_str in ("time", "runtime", "walltime", "time_min"):
             if self.resources.get(time_str, False):
                 resources_str += " -W {}".format(self.resources[time_str])
         return resources_str
