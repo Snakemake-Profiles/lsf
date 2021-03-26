@@ -603,7 +603,7 @@ search_fasta_on_index: '-P project'
             actual = lsf_submit.resources_cmd
             expected = (
                 "-M 1000 -n 8 -R 'select[mem>1000] rusage[mem=1000] "
-                "span[hosts=1]' -W 00:01"
+                "span[hosts=1]' -W 1"
             )
 
             assert actual == expected
