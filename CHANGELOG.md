@@ -6,6 +6,12 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+## [0.1.2] - 01/04/2021
+
+### Added
+
+- Support for runtime resources [[#38][38]]
+
 ## [0.1.1] - 16/03/2021
 
 ### Added
@@ -58,6 +64,7 @@ This document tracks changes to the `master` branch of the profile.
 [15]: https://github.com/Snakemake-Profiles/lsf/pull/15
 [18]: https://github.com/Snakemake-Profiles/lsf/issues/18
 [20]: https://github.com/Snakemake-Profiles/lsf/pull/20
+[38]: https://github.com/Snakemake-Profiles/lsf/pull/38
 [5]: https://github.com/Snakemake-Profiles/lsf/pull/5
 [7]: https://github.com/Snakemake-Profiles/lsf/issues/7
 [11]: https://github.com/Snakemake-Profiles/lsf/pull/11
@@ -66,5 +73,6 @@ This document tracks changes to the `master` branch of the profile.
 [39]: https://github.com/Snakemake-Profiles/lsf/issues/39
 [0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
 [0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
-[Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/v0.1.1...HEAD
+[0.1.2]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.2
+[Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/v0.1.2...HEAD
 
