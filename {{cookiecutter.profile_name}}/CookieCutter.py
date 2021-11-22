@@ -17,7 +17,7 @@ class CookieCutter:
 
     @staticmethod
     def get_default_project() -> str:
-        return int("{{cookiecutter.default_project}}")
+        return "{{cookiecutter.default_project}}"
 
     @staticmethod
     def get_lsf_unit_for_limits() -> str:
