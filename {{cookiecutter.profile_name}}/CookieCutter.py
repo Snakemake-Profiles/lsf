@@ -4,10 +4,6 @@ class CookieCutter:
     """
 
     @staticmethod
-    def get_default_threads() -> int:
-        return int("{{cookiecutter.default_threads}}")
-
-    @staticmethod
     def get_default_mem_mb() -> int:
         return int("{{cookiecutter.default_mem_mb}}")
 
@@ -18,6 +14,10 @@ class CookieCutter:
     @staticmethod
     def get_default_queue() -> str:
         return "{{cookiecutter.default_queue}}"
+
+    @staticmethod
+    def get_default_project() -> str:
+        return int("{{cookiecutter.default_project}}")
 
     @staticmethod
     def get_lsf_unit_for_limits() -> str:
