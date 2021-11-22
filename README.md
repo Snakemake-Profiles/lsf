@@ -219,6 +219,15 @@ The default queue on the cluster to submit jobs to. If left unset, then the defa
 your cluster will be used.  
 The `bsub` parameter that this controls is [`-q`][bsub-q].
 
+#### `default_project`
+
+**Default**: None
+
+The default project on the cluster to submit jobs with. If left unset, then the default on
+your cluster will be used.
+
+The `bsub` parameter that this controls is [`-P`][bsub-P].
+
 #### `max_status_checks_per_second`
 
 **Default**: `10`
