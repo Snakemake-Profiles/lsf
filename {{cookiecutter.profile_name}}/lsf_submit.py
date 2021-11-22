@@ -177,7 +177,7 @@ class Submitter:
 
     @property
     def proj(self) -> str:
-        if re.match(r'-P ', self.rule_specific_params):
+        if re.match(r"-P ", self.rule_specific_params):
             return ""
         return self.cluster.get("project", CookieCutter.get_default_project())
 
