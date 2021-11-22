@@ -24,9 +24,6 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test___several_trivial_getter_methods(self, *mocks):
         argv = [
@@ -96,9 +93,6 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test____submit_cmd_and_get_external_job_id___real_output_stream_from_submission(
         self, *mocks
@@ -124,9 +118,6 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test____submit_cmd_and_get_external_job_id___output_stream_has_no_jobid(
         self, *mocks
@@ -148,9 +139,6 @@ class TestSubmitter(unittest.TestCase):
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
-    )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
@@ -215,9 +203,6 @@ class TestSubmitter(unittest.TestCase):
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
-    )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
@@ -297,9 +282,6 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test_rule_specific_params_are_submitted(self, *mocks):
         argv = [
@@ -353,9 +335,6 @@ search_fasta_on_index: '-P project'
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test_lsf_mem_unit_is_kb_and_mem_mb_is_converted_accordingly(self, *mocks):
         argv = [
@@ -406,9 +385,6 @@ search_fasta_on_index: '-P project'
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
-    )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test_lsf_mem_unit_is_tb_and_mem_mb_is_converted_and_rounded_up_to_int(
@@ -585,9 +561,6 @@ search_fasta_on_index: '-P project'
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
-    @patch.object(
-        CookieCutter, CookieCutter.get_default_threads.__name__, return_value=8
-    )
     def test_time_resource_for_group(self, *mocks):
         for time_str in ("time", "runtime", "walltime", "time_min"):
             jobscript = Path(
@@ -602,7 +575,7 @@ search_fasta_on_index: '-P project'
 
             actual = lsf_submit.resources_cmd
             expected = (
-                "-M 1000 -n 8 -R 'select[mem>1000] rusage[mem=1000] "
+                "-M 1000 -n 1 -R 'select[mem>1000] rusage[mem=1000] "
                 "span[hosts=1]' -W 1"
             )
 

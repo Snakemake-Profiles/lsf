@@ -187,16 +187,6 @@ without `mem_mb` set under `resources`.
 See [below](#standard-rule-specific-cluster-resource-settings) for how to overwrite this
 in a `rule`.
 
-#### `default_threads`
-
-**Default**: `1`
-
-This sets the default number of threads for a `rule` being submitted to the cluster
-without the `threads` variable set.
-
-See [below](#standard-rule-specific-cluster-resource-settings) for how to overwrite this
-in a `rule`.
-
 #### `default_cluster_logdir`
 
 **Default**: `"logs/cluster"`
