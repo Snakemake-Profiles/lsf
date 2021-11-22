@@ -12,6 +12,7 @@
   "default_threads": 1,
   "default_cluster_logdir": "logs/cluster",
   "default_queue": "",
+  "default_project": "",
   "max_status_checks_per_second": 10,
   "max_jobs_per_second": 10,
   "profile_name": "lsf"

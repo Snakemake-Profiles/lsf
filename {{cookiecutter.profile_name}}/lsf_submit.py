@@ -65,7 +65,7 @@ class Submitter:
 
     @property
     def threads(self) -> int:
-        return self.job_properties.get("threads", CookieCutter.get_default_threads())
+        return self.job_properties.get("threads", 1)
 
     @property
     def resources(self) -> dict:
@@ -176,6 +176,16 @@ class Submitter:
         return self.lsf_config.params_for_rule(self.rule_name)
 
     @property
+    def proj(self) -> str:
+        if re.match(r'-P ', self.rule_specific_params):
+            return ""
+        return self.cluster.get("project", CookieCutter.get_default_project())
+
+    @property
+    def proj_cmd(self) -> str:
+        return "-P {}".format(self.proj) if self.proj else ""
+
+    @property
     def cluster_cmd(self) -> str:
         return self._cluster_cmd
 
@@ -186,6 +196,7 @@ class Submitter:
             self.resources_cmd,
             self.jobinfo_cmd,
             self.queue_cmd,
+            self.proj_cmd,
             self.cluster_cmd,
             self.rule_specific_params,
             self.jobscript,
