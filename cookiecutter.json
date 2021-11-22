@@ -9,7 +9,6 @@
   "print_shell_commands": false,
   "jobs": 500,
   "default_mem_mb": 1024,
-  "default_threads": 1,
   "default_cluster_logdir": "logs/cluster",
   "default_queue": "",
   "default_project": "",
