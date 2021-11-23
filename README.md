@@ -56,7 +56,7 @@ Download and set up the profile on your cluster
 profile_dir="${HOME}/.config/snakemake"
 mkdir -p "$profile_dir"
 # use cookiecutter to create the profile in the config directory
-template="gh:Snakemake-Profiles/lsf"
+template="gh:BEFH/lsf"
 cookiecutter --output-dir "$profile_dir" "$template"
 ```
 
