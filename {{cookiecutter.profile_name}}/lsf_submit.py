@@ -165,6 +165,8 @@ class Submitter:
 
     @property
     def queue(self) -> str:
+        if re.match(r"-q ", self.rule_specific_params):
+            return ""
         return self.cluster.get("queue", CookieCutter.get_default_queue())
 
     @property
