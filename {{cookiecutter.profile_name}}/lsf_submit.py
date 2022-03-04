@@ -165,7 +165,7 @@ class Submitter:
 
     @property
     def queue(self) -> str:
-        if re.match(r"-q ", self.rule_specific_params):
+        if re.search(r"-q ", self.rule_specific_params):
             return ""
         return self.cluster.get("queue", CookieCutter.get_default_queue())
 
@@ -179,7 +179,7 @@ class Submitter:
 
     @property
     def proj(self) -> str:
-        if re.match(r"-P ", self.rule_specific_params):
+        if re.search(r"-P ", self.rule_specific_params):
             return ""
         return self.cluster.get("project", CookieCutter.get_default_project())
 

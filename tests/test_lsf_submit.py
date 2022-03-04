@@ -24,6 +24,9 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test___several_trivial_getter_methods(self, *mocks):
         argv = [
@@ -72,7 +75,7 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(
             lsf_submit.submit_cmd,
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd),
         )
 
@@ -140,6 +143,9 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
     @patch.object(OSLayer, OSLayer.remove_file.__name__)
@@ -191,7 +197,7 @@ class TestSubmitter(unittest.TestCase):
         expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print_mock.assert_called_once_with(
@@ -203,6 +209,9 @@ class TestSubmitter(unittest.TestCase):
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
@@ -247,7 +256,7 @@ class TestSubmitter(unittest.TestCase):
         expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print_mock.assert_not_called()
@@ -335,6 +344,9 @@ search_fasta_on_index: '-P project'
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test_lsf_mem_unit_is_kb_and_mem_mb_is_converted_accordingly(self, *mocks):
         argv = [
@@ -373,7 +385,7 @@ search_fasta_on_index: '-P project'
         ).format(outlog=expected_outlog, errlog=expected_errlog)
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "-q queue -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
@@ -382,6 +394,9 @@ search_fasta_on_index: '-P project'
 
     @patch.object(
         CookieCutter, CookieCutter.get_log_dir.__name__, return_value="logdir"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
@@ -426,7 +441,7 @@ search_fasta_on_index: '-P project'
         ).format(outlog=expected_outlog, errlog=expected_errlog)
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "-q queue -gpu - -P project "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
