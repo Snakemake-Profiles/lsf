@@ -112,7 +112,7 @@ class Memory:
 
     def bytes(self, decimal_multiples: bool = True) -> float:
         scaling_factor = self._scaling_factor(decimal_multiples)
-        return float(self.value * (scaling_factor ** self.power))
+        return float(self.value * (scaling_factor**self.power))
 
     def to(self, unit: Unit, decimal_multiples: bool = True) -> "Memory":
         scaling_factor = self._scaling_factor(decimal_multiples) ** unit.power
