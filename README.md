@@ -10,20 +10,6 @@
 
 [TOC]: #
 
-## Table of Contents
-- [Install](#install)
-  - [Dependencies](#dependencies)
-  - [Profile](#profile)
-- [Usage](#usage)
-  - [Standard rule-specific cluster resource settings](#standard-rule-specific-cluster-resource-settings)
-  - [Non-standard rule-specific cluster resource settings](#non-standard-rule-specific-cluster-resource-settings)
-- [Known Issues](#known-issues)
-- [Contributing](#contributing)
-
-## Install
-
-To install the preconfigured Goate Lab settings, run the following:
-
 ```bash
 mkdir -p ~/.config/snakemake && \
   git clone -b preconfigured_goatelab \
@@ -56,7 +42,7 @@ Download and set up the profile on your cluster
 profile_dir="${HOME}/.config/snakemake"
 mkdir -p "$profile_dir"
 # use cookiecutter to create the profile in the config directory
-template="gh:BEFH/lsf"
+template="gh:Snakemake-Profiles/lsf"
 cookiecutter --output-dir "$profile_dir" "$template"
 ```
 
@@ -64,10 +50,8 @@ You will then be prompted to set some default parameters.
 
 #### `LSF_UNIT_FOR_LIMITS`
 
-**Default**: `KB`
+**Default**: `KB`  
 **Valid options:** `KB`, `MB`, `GB`, `TB`, `PB`, `EB`, `ZB`
-
-***On Minerva, this is in MB.***
 
 **⚠️IMPORTANT⚠️**: This **must** be set to the same as [`LSF_UNIT_FOR_LIMITS`][limits] on
 your cluster. This value is stored in your cluster's [`lsf.conf`][lsf-conf] file. In
@@ -90,7 +74,7 @@ submitting jobs. See [here][18] for further information.
 
 #### `UNKWN_behaviour`
 
-**Default**: `wait`
+**Default**: `wait`  
 **Valid options**: `wait`, `kill`
 
 When LSF returns a job status of `UNKWN` do you want to wait for the host the job is
@@ -99,7 +83,7 @@ outlined [here][job_kill]?
 
 #### `ZOMBI_behaviour`
 
-**Default**: `ignore`
+**Default**: `ignore`  
 **Valid options**: `ignore`, `kill`
 
 When LSF returns a job status of `ZOMBI` do you want to ignore this (not clean it up) or
@@ -108,9 +92,9 @@ considered failed.
 
 #### `latency_wait`
 
-**Default:** `10`
+**Default:** `5`
 
-This sets the default `--latency-wait/--output-wait/-w` parameter in `snakemake`.
+This sets the default `--latency-wait/--output-wait/-w` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -122,10 +106,10 @@ From the `snakemake --help` menu
 
 #### `use_conda`
 
-**Default**: `True`
+**Default**: `False`  
 **Valid options:** `False`, `True`
 
-This sets the default `--use-conda` parameter in `snakemake`.
+This sets the default `--use-conda` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -136,10 +120,10 @@ From the `snakemake --help` menu
 
 #### `use_singularity`
 
-**Default**: `True`
+**Default**: `False`  
 **Valid options:** `False`, `True`
 
-This sets the default `--use-singularity` parameter in `snakemake`.
+This sets the default `--use-singularity` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -152,7 +136,7 @@ From the `snakemake --help` menu
 
 **Default**: `0`
 
-This sets the default `--restart-times` parameter in `snakemake`.
+This sets the default `--restart-times` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -163,10 +147,10 @@ From the `snakemake --help` menu
 
 #### `print_shell_commands`
 
-**Default**: `True`
+**Default**: `False`  
 **Valid options:** `False`, `True`
 
-This sets the default ` --printshellcmds/-p` parameter in `snakemake`.
+This sets the default ` --printshellcmds/-p` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -175,15 +159,9 @@ From the `snakemake --help` menu
 
 #### `jobs`
 
-Determine how many jobs are supported by running
+**Default**: `500`
 
-```
-ulimit -u
-```
-
-**Default**: `2000`
-
-This sets the default `--cores/--jobs/-j` parameter in `snakemake`.
+This sets the default `--cores/--jobs/-j` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -198,7 +176,7 @@ the same time<sup>[1][1]</sup>.
 
 #### `default_mem_mb`
 
-**Default**: `4096`
+**Default**: `1024`
 
 This sets the default memory, in megabytes, for a `rule` being submitted to the cluster
 without `mem_mb` set under `resources`.
@@ -215,13 +193,13 @@ to the working directory of the pipeline. If it does not exist, it will be creat
 
 The log files for a given rule are organised into sub-directories. This is to avoid
 having potentially thousands of files in one directory, as this can cause file system
-issues.
+issues.  
 If you want to find the log files for a rule called `foo`, with wildcards
 `sample=a,ext=fq` then this would be located at
 `logs/cluster/foo/sample=a,ext=fq/jobid<jobid>-<uuid>.out` for the [standard
-output][bsub-o] and with extension `.err` for the [standard error][bsub-e].
+output][bsub-o] and with extension `.err` for the [standard error][bsub-e].  
 `<jobid>` is the internal jobid used by `snakemake` and is the same across multiple
-attempts at running the same rule.
+attempts at running the same rule.  
 [`<uuid>`][uuid] is a random 28-digit, separated by `-`, and is specific to each attempt
 at running a rule. So if a rule fails, and is restarted, the uuid will be different.
 
@@ -235,7 +213,7 @@ specific rule by following the instructions
 **Default**: None
 
 The default queue on the cluster to submit jobs to. If left unset, then the default on
-your cluster will be used.
+your cluster will be used.  
 The `bsub` parameter that this controls is [`-q`][bsub-q].
 
 #### `default_project`
@@ -249,9 +227,9 @@ The `bsub` parameter that this controls is [`-P`][bsub-P].
 
 #### `max_status_checks_per_second`
 
-**Default**: `5`
+**Default**: `10`
 
-This sets the default `--max-status-checks-per-second` parameter in `snakemake`.
+This sets the default `--max-status-checks-per-second` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -262,9 +240,9 @@ From the `snakemake --help` menu
 
 #### `max_jobs_per_second`
 
-**Default**: `5`
+**Default**: `10`
 
-This sets the default `--max-jobs-per-second` parameter in `snakemake`.
+This sets the default `--max-jobs-per-second` parameter in `snakemake`.  
 From the `snakemake --help` menu
 
 ```text
@@ -278,7 +256,7 @@ From the `snakemake --help` menu
 **Default**: `lsf`
 
 The name to use for this profile. The directory for the profile is created as this name
-i.e. `$HOME/.config/snakemake/<profile_name>`.
+i.e. `$HOME/.config/snakemake/<profile_name>`.  
 This is also the value you pass to `snakemake --profile <profile_name>`.
 
 ## Usage
@@ -353,7 +331,7 @@ foo:
 ```
 
 In this example, we specify a default (`__default__`) [project][bsub-P] (`-P`) and
-[runtime limit][bsub-W] (`-W`) that will apply to all rules.
+[runtime limit][bsub-W] (`-W`) that will apply to all rules.  
 We then override the project and, additionally, specify [GPU resources][bsub-gpu] for
 the rule `foo`.
 
@@ -376,7 +354,7 @@ The above is also a valid form of the previous example but **not recommended**.
 
 #### Quote-escaping
 
-Some LSF commands require multiple levels of quote-escaping.
+Some LSF commands require multiple levels of quote-escaping.  
 For example, to exclude a node from job submission which has non-alphabetic characters
 in its name ([docs](https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_command_ref/bsub.__r.1.html?view=embed)): `bsub -R "select[hname!='node-name']"`.
 
@@ -399,7 +377,7 @@ complex log file naming scheme. As the status-checker uses `tail` to get the sta
 the standard output log file of the job is very large, then status checking will be
 slowed down as a result. If you run into these problems and the `tail` solution is no
 feasible, the first suggestion would be to reduce `--max_status_checks_per_second` and
-see if this helps.
+see if this helps.  
 Please raise an issue if you experience this, and the log file check doesn't seem to
 work.
 
