@@ -6,6 +6,18 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+### Added
+
+- Default project in cookiecutter
+
+### Removed
+
+- Default threads in cookiecutter
+
+### Changed
+
+- Default project and queue will be removed from the submission command if they are present in the `lsf.yaml`
+
 ## [0.1.2] - 01/04/2021
 
 ### Added

@@ -10,14 +10,17 @@
 
 [TOC]: #
 
-```bash
-mkdir -p ~/.config/snakemake && \
-  git clone -b preconfigured_goatelab \
-    https://github.com/BEFH/lsf.git \
-    ~/.config/snakemake/lsf
-```
+## Table of Contents
+- [Install](#install)
+  - [Dependencies](#dependencies)
+  - [Profile](#profile)
+- [Usage](#usage)
+  - [Standard rule-specific cluster resource settings](#standard-rule-specific-cluster-resource-settings)
+  - [Non-standard rule-specific cluster resource settings](#non-standard-rule-specific-cluster-resource-settings)
+- [Known Issues](#known-issues)
+- [Contributing](#contributing)
 
-You can modify the presets in `~/.config/snakemake/lsf/config.yaml` and `~/.config/snakemake/lsf/CookieCutter.py`
+## Install
 
 ### Dependencies
 
