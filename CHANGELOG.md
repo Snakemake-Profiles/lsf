@@ -6,6 +6,10 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+### Fixed
+
+- Support quoted jobid from `snakemake>=v7.1.1` [[#45][45]]
+
 ## [0.1.2] - 01/04/2021
 
 ### Added
@@ -71,6 +75,7 @@ This document tracks changes to the `master` branch of the profile.
 [9]: https://github.com/Snakemake-Profiles/lsf/pull/9
 [36]: https://github.com/Snakemake-Profiles/lsf/issues/36
 [39]: https://github.com/Snakemake-Profiles/lsf/issues/39
+[45]: https://github.com/Snakemake-Profiles/lsf/issues/45
 [0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
 [0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
 [0.1.2]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.2
