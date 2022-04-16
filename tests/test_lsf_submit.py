@@ -72,6 +72,8 @@ class TestSubmitter(unittest.TestCase):
         ).format(outlog=expected_outlog, errlog=expected_errlog)
         self.assertEqual(lsf_submit.jobinfo_cmd, expected_jobinfo_cmd)
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
+        self.assertEqual(lsf_submit.proj, "proj")
+        self.assertEqual(lsf_submit.proj_cmd, "-P proj")
         self.assertEqual(
             lsf_submit.submit_cmd,
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
