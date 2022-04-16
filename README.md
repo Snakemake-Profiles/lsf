@@ -187,16 +187,6 @@ without `mem_mb` set under `resources`.
 See [below](#standard-rule-specific-cluster-resource-settings) for how to overwrite this
 in a `rule`.
 
-#### `default_threads`
-
-**Default**: `1`
-
-This sets the default number of threads for a `rule` being submitted to the cluster
-without the `threads` variable set.
-
-See [below](#standard-rule-specific-cluster-resource-settings) for how to overwrite this
-in a `rule`.
-
 #### `default_cluster_logdir`
 
 **Default**: `"logs/cluster"`
@@ -228,6 +218,15 @@ specific rule by following the instructions
 The default queue on the cluster to submit jobs to. If left unset, then the default on
 your cluster will be used.  
 The `bsub` parameter that this controls is [`-q`][bsub-q].
+
+#### `default_project`
+
+**Default**: None
+
+The default project on the cluster to submit jobs with. If left unset, then the default on
+your cluster will be used.
+
+The `bsub` parameter that this controls is [`-P`][bsub-P].
 
 #### `max_status_checks_per_second`
 
@@ -314,7 +313,7 @@ rule foo:
     output: "bar.txt"
     shell:
         "grep 'bar' {input} > {output}"
-        
+
 rule bar:
     input: "bar.txt"
     output: "file.out"
@@ -358,7 +357,7 @@ The above is also a valid form of the previous example but **not recommended**.
 
 #### Quote-escaping
 
-Some LSF commands require multiple levels of quote-escaping.
+Some LSF commands require multiple levels of quote-escaping.  
 For example, to exclude a node from job submission which has non-alphabetic characters
 in its name ([docs](https://www.ibm.com/support/knowledgecenter/SSWRJV_10.1.0/lsf_command_ref/bsub.__r.1.html?view=embed)): `bsub -R "select[hname!='node-name']"`.
 
@@ -412,4 +411,3 @@ Please refer to [`CONTRIBUTING.md`](CONTRIBUTING.md).
 [yaml-collections]: https://yaml.org/spec/1.2/spec.html#id2759963
 [leandro]: https://github.com/leoisl
 [snakemake_params]: https://snakemake.readthedocs.io/en/stable/executable.html#all-options
-

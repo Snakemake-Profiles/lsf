@@ -1,7 +1,21 @@
 {
-  "LSF_UNIT_FOR_LIMITS": ["KB", "MB", "GB", "TB", "PB", "EB", "ZB"],
-  "UNKWN_behaviour": ["wait", "kill"],
-  "ZOMBI_behaviour": ["ignore", "kill"],
+  "LSF_UNIT_FOR_LIMITS": [
+    "KB",
+    "MB",
+    "GB",
+    "TB",
+    "PB",
+    "EB",
+    "ZB"
+  ],
+  "UNKWN_behaviour": [
+    "wait",
+    "kill"
+  ],
+  "ZOMBI_behaviour": [
+    "ignore",
+    "kill"
+  ],
   "latency_wait": 5,
   "use_conda": false,
   "use_singularity": false,
@@ -9,9 +23,9 @@
   "print_shell_commands": false,
   "jobs": 500,
   "default_mem_mb": 1024,
-  "default_threads": 1,
   "default_cluster_logdir": "logs/cluster",
   "default_queue": "",
+  "default_project": "",
   "max_status_checks_per_second": 10,
   "max_jobs_per_second": 10,
   "profile_name": "lsf"
