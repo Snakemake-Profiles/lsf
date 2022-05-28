@@ -9,6 +9,7 @@ This document tracks changes to the `master` branch of the profile.
 ### Added
 
 - Default project in cookiecutter
+- Cluster cancel (`--cluster-cancel`) command (`bkill`)
 
 ### Removed
 
