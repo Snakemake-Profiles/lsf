@@ -6,6 +6,8 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+## [0.2.0] - 28/05/2022
+
 ### Added
 
 - Default project in cookiecutter
@@ -92,5 +94,6 @@ This document tracks changes to the `master` branch of the profile.
 [0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
 [0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
 [0.1.2]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.2
+[0.2.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.2.0
 [Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/v0.1.2...HEAD
 
