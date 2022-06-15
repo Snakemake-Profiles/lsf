@@ -254,6 +254,18 @@ From the `snakemake --help` menu
                         default is 10, fractions allowed.
 ```
 
+#### `max_status_checks`
+
+**Default**: `1`
+
+How many times to check the status of a job.
+
+#### `wait_between_tries`
+
+**Default**: `0.001`
+
+How many seconds to wait until checking the status of a job again (if `max_status_checks` is greater than 1).
+
 #### `profile_name`
 
 **Default**: `lsf`

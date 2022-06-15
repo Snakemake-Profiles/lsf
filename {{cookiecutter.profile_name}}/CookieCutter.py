@@ -34,3 +34,11 @@ class CookieCutter:
     @staticmethod
     def get_latency_wait() -> float:
         return float("{{cookiecutter.latency_wait}}")
+
+    @staticmethod
+    def get_wait_between_tries() -> float:
+        return float("{{cookiecutter.wait_between_tries}}")
+
+    @staticmethod
+    def get_max_status_checks() -> int:
+        return int("{{cookiecutter.max_status_checks}}")
