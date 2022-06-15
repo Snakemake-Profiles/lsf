@@ -36,9 +36,9 @@ class OSLayer:
             file.unlink()
 
     @staticmethod
-    def run_process(cmd: str) -> Tuple[stdout, stderr]:
+    def run_process(cmd: str, check: bool = True) -> Tuple[stdout, stderr]:
         completed_process = subprocess.run(
-            cmd, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            cmd, check=check, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         return (
             completed_process.stdout.decode().strip(),

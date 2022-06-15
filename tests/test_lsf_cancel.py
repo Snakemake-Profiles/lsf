@@ -73,7 +73,7 @@ class TestKillJobs(unittest.TestCase):
 
         kill_jobs(jobids)
 
-        run_process_mock.assert_called_once_with(expected_kill_cmd)
+        run_process_mock.assert_called_once_with(expected_kill_cmd, check=False)
 
     @patch.object(
         OSLayer,
@@ -92,7 +92,7 @@ class TestKillJobs(unittest.TestCase):
 
         kill_jobs(jobids)
 
-        run_process_mock.assert_called_once_with(expected_kill_cmd)
+        run_process_mock.assert_called_once_with(expected_kill_cmd, check=False)
 
     @patch.object(
         OSLayer,
@@ -133,4 +133,4 @@ class TestKillJobs(unittest.TestCase):
 
         kill_jobs(jobids)
 
-        run_process_mock.assert_called_once_with(expected_kill_cmd)
+        run_process_mock.assert_called_once_with(expected_kill_cmd, check=False)

@@ -18,7 +18,7 @@ def kill_jobs(ids_to_kill: List[str]):
     # we don't want to run bkill with no argument as this will kill the last job
     if any(ids_to_kill):
         cmd = "{} {}".format(KILL, " ".join(ids_to_kill))
-        _ = OSLayer.run_process(cmd)
+        _ = OSLayer.run_process(cmd, check=False)
 
 
 def parse_input() -> List[str]:
