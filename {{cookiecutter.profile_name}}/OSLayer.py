@@ -50,6 +50,10 @@ class OSLayer:
         print(string)
 
     @staticmethod
+    def eprint(string: str):
+        print(string, file=sys.stderr)
+
+    @staticmethod
     def get_uuid4_string() -> str:
         return str(uuid.uuid4())
 
