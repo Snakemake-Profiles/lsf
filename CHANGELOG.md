@@ -6,6 +6,8 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+## [0.3.0] - 13/07/2022
+
 ### Added
 - Exposed `max_status_check` and `wait_between_tries` for status checker [[#48][48]]
 
@@ -103,5 +105,6 @@ This document tracks changes to the `master` branch of the profile.
 [0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
 [0.1.2]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.2
 [0.2.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.2.0
-[Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/v0.1.2...HEAD
+[0.3.0]: https://github.com/Snakemake-Profiles/lsf/compare/0.2.0...0.3.0
+[Unreleased]: https://github.com/Snakemake-Profiles/lsf/compare/0.3.0...HEAD
 
