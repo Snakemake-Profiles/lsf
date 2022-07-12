@@ -6,6 +6,8 @@
 ![Python versions](https://img.shields.io/badge/Python%20versions->=3.5-blue)
 ![License](https://img.shields.io/github/license/Snakemake-Profiles/lsf)
 
+> 📢**NOTICE: We are seeking volunteers to maintain this repository as the current maintainers no longer use LSF. See [this issue](https://github.com/Snakemake-Profiles/lsf/issues/57).**📢
+
 [Snakemake profile][profile] for running jobs on an [LSF][lsf] cluster.
 
 [TOC]: #
