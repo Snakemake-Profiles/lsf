@@ -227,6 +227,11 @@ if __name__ == "__main__":
         )
 
     lsf_status_checker = StatusChecker(
-        jobid, outlog, kill_unknown=kill_unknown, kill_zombie=kill_zombie
+        jobid,
+        outlog,
+        kill_unknown=kill_unknown,
+        kill_zombie=kill_zombie,
+        wait_between_tries=CookieCutter.get_wait_between_tries(),
+        max_status_checks=CookieCutter.get_max_status_checks(),
     )
     print(lsf_status_checker.get_status())

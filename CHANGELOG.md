@@ -6,6 +6,12 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+### Added
+- Exposed `max_status_check` and `wait_between_tries` for status checker [[#48][48]]
+
+### Changed
+- Cluster cancel is now a script instead of the `bkill` command in order to handle the log file paths that come with the job ID [[#55][55]]
+
 ## [0.2.0] - 28/05/2022
 
 ### Added
@@ -91,6 +97,8 @@ This document tracks changes to the `master` branch of the profile.
 [36]: https://github.com/Snakemake-Profiles/lsf/issues/36
 [39]: https://github.com/Snakemake-Profiles/lsf/issues/39
 [45]: https://github.com/Snakemake-Profiles/lsf/issues/45
+[48]: https://github.com/Snakemake-Profiles/lsf/issues/48
+[55]: https://github.com/Snakemake-Profiles/lsf/issues/55
 [0.1.0]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.0
 [0.1.1]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.1
 [0.1.2]: https://github.com/Snakemake-Profiles/lsf/releases/tag/0.1.2

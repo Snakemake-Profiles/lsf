@@ -28,5 +28,7 @@
   "default_project": "",
   "max_status_checks_per_second": 10,
   "max_jobs_per_second": 10,
+  "max_status_checks": 1,
+  "wait_between_tries": 0.001,
   "profile_name": "lsf"
 }
