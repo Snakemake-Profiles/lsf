@@ -30,5 +30,6 @@
   "max_jobs_per_second": 10,
   "max_status_checks": 1,
   "wait_between_tries": 0.001,
+  "jobscript_timeout": 10,
   "profile_name": "lsf"
 }

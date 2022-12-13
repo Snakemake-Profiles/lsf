@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import math
+import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import List, Union, Optional
 
@@ -213,6 +215,16 @@ class Submitter:
         OSLayer.remove_file(self.errlog)
 
     def _submit_cmd_and_get_external_job_id(self) -> int:
+        start_time = time.time()
+        # Wait for the jobscript to be created
+        while not os.path.exists(self.jobscript):
+            if time.time() - start_time >= CookieCutter.jobscript_timeout():
+                # The file was not created within the specified timeout period
+                raise TimeoutError("Timed out waiting for jobscript to be created")
+
+            # Sleep for a short amount of time before checking again
+            time.sleep(0.1)
+
         output_stream, error_stream = OSLayer.run_process(self.submit_cmd)
         match = re.search(r"Job <(\d+)> is submitted", output_stream)
         jobid = match.group(1)

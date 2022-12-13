@@ -42,3 +42,7 @@ class CookieCutter:
     @staticmethod
     def get_max_status_checks() -> int:
         return int("{{cookiecutter.max_status_checks}}")
+
+    @staticmethod
+    def jobscript_timeout() -> int:
+        return int("{{cookiecutter.jobscript_timeout}}")
