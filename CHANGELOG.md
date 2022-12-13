@@ -6,6 +6,10 @@ This document tracks changes to the `master` branch of the profile.
 
 ## [Unreleased]
 
+### Added
+
+- `jobscript_timeout` cookiecutter variable that sets the number of seconds to wait for the jobscript to exist before submiting the job
+
 ## [0.3.0] - 13/07/2022
 
 ### Added
