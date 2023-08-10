@@ -27,12 +27,13 @@
 ### Dependencies
 
 This profile is deployed using [Cookiecutter][cookiecutter-repo]. If you do not have
-`cookiecutter` installed it can be easily installed using `conda` or `pip` by running:
+`cookiecutter` installed it can be easily installed using [`mamba`](https://github.com/conda-forge/miniforge#install) or `pip` by running:
 
 ```bash
 pip install --user cookiecutter
 # or
-conda install -c conda-forge cookiecutter
+mamba create -n cookiecutter -c conda-forge cookiecutter
+mamba activate cookiecutter
 ```
 
 If neither of these methods suits you, then visit the [installation
