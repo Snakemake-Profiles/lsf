@@ -39,6 +39,15 @@ mamba activate cookiecutter
 If neither of these methods suits you, then visit the [installation
 documentation][cc-install] for other options.
 
+### Using Snakemake 8
+
+In Snakemake 8, the cluster functionality has been split into a separate plugin which needs to be separately installed.
+It can be installed using `pip`.
+
+```bash
+pip install snakemake-executor-plugin-cluster-generic
+```
+
 ### Profile
 
 Download and set up the profile on your cluster
