@@ -8,6 +8,8 @@
 
 > 📢 **NOTICE: We are seeking volunteers to maintain this repository as the current maintainers no longer use LSF. See [this issue](https://github.com/Snakemake-Profiles/lsf/issues/57).** 📢
 
+> 📢 **This profile can't be used with Snakemake 8 or above. Please use the [LSF executor plugin](https://github.com/BEFH/snakemake-executor-plugin-lsf) instead** 📢
+
 [Snakemake profile][profile] for running jobs on an [LSF][lsf] cluster.
 
 [TOC]: #
