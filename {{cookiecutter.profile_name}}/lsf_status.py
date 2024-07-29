@@ -28,6 +28,17 @@ UNKNOWN = "UNKWN"
 ZOMBIE = "ZOMBI"
 
 
+def extract_job_status(bjobs_output):
+    import re
+
+    response = bjobs_output.split('\n')
+    if len(response) != 2:
+        return "UNKNOWN"
+
+    response = response[1]
+    return re.split("[\\t\\r\\n ]+", response)[2]
+
+
 class StatusChecker:
     SUCCESS = "success"
     RUNNING = "running"
@@ -71,7 +82,7 @@ class StatusChecker:
 
     @property
     def bjobs_query_cmd(self) -> str:
-        return "bjobs -o 'stat' -noheader {jobid}".format(jobid=self.jobid)
+        return "bjobs {jobid}".format(jobid=self.jobid)
 
     def _handle_unknown_job(self) -> str:
         if self.kill_unknown:
@@ -105,6 +116,8 @@ class StatusChecker:
                     stderr=error_stream
                 )
             )
+
+        output_stream = extract_job_status(output_stream)
 
         if output_stream == UNKNOWN:
             return self._handle_unknown_job()
