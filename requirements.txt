@@ -1,1 +1,1 @@
-snakemake>=4.1.0
+snakemake>=4.1.0,<8.0.0
